@@ -28,7 +28,7 @@
       }
       
       .container {
-        max-width: 800px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 0 20px;
       }
@@ -296,7 +296,7 @@
 │
 ├── 📁 Modules/
 │   │
-│   ├── 📁 Orders/                          # 🔷 ORDERS MODULE
+│   ├── 📁 Orders/                          # ORDERS MODULE
 │   │   ├── 📁 Application/                 # Use cases and application logic
 │   │   │   ├── 📁 Commands/
 │   │   │   │   ├── CreateOrder/
@@ -336,7 +336,7 @@
 │   │   │   └── 📁 Outbox/                  # Transactional Outbox
 │   │   │       └── OrdersOutboxProcessor.cs
 │   │   │
-│   │   ├── 📁 Contracts/                   # ⭐ MODULE&#39;S PUBLIC INTERFACE
+│   │   ├── 📁 Contracts/                   # MODULE&#39;S PUBLIC INTERFACE
 │   │   │   ├── 📁 IntegrationEvents/       # Events for other modules
 │   │   │   │   ├── OrderCompletedIntegrationEvent.cs
 │   │   │   │   └── OrderCancelledIntegrationEvent.cs
@@ -345,7 +345,7 @@
 │   │   │
 │   │   └── OrdersModule.cs                 # Module DI registration
 │   │
-│   ├── 📁 Customers/                       # 🔷 CUSTOMERS MODULE
+│   ├── 📁 Customers/                       # CUSTOMERS MODULE
 │   │   ├── 📁 Application/
 │   │   ├── 📁 Domain/
 │   │   ├── 📁 Infrastructure/
@@ -356,7 +356,7 @@
 │   │   │       └── ICustomerService.cs     # Used by Orders to get customer data
 │   │   └── CustomersModule.cs
 │   │
-│   ├── 📁 Inventory/                       # 🔷 INVENTORY MODULE
+│   ├── 📁 Inventory/                       # INVENTORY MODULE
 │   │   ├── 📁 Application/
 │   │   │   └── 📁 EventHandlers/
 │   │   │       └── OrderCompletedHandler.cs  # Reacts to Orders events
@@ -367,14 +367,14 @@
 │   │   ├── 📁 Contracts/
 │   │   └── InventoryModule.cs
 │   │
-│   └── 📁 Notifications/                   # 🔷 NOTIFICATIONS MODULE
+│   └── 📁 Notifications/                   # NOTIFICATIONS MODULE
 │       ├── 📁 Application/
 │       ├── 📁 Domain/
 │       ├── 📁 Infrastructure/
 │       ├── 📁 Contracts/
 │       └── NotificationsModule.cs
 │
-├── 📁 Shared/                              # 🔶 SHARED CODE (KERNEL)
+├── 📁 Shared/                              # SHARED CODE (KERNEL)
 │   ├── 📁 Domain/
 │   │   ├── Entity.cs                       # Base class for entities
 │   │   ├── AggregateRoot.cs
@@ -395,7 +395,7 @@
 │           ├── LoggingBehavior.cs
 │           └── TransactionBehavior.cs
 │
-├── 📁 API/                                 # 🔵 ENTRY POINT (Host)
+├── 📁 API/                                 # ENTRY POINT (Host)
 │   ├── 📁 Controllers/
 │   │   ├── OrdersController.cs             # Delegates to Orders module
 │   │   ├── CustomersController.cs
