@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SimplePress: Anatomy of a Static Site Generator - Danilo Paissan</title>
+  <meta name="description" content="Trentino inside, ligurian outside">
+  <style>
+      :root {
+        --color-pearl: #F8F9FA;
+        --color-light-silver: #E9ECEF;
+        --color-smoke-gray: #CED4DA;
+        --color-medium-gray: #6C757D;
+        --color-dark-gray: #212529;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--color-dark-gray);
+        background-color: var(--color-pearl);
+      }
+      
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      header {
+        background-color: var(--color-light-silver);
+        border-bottom: 1px solid var(--color-smoke-gray);
+        padding: 1rem 0;
+      }
+      
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+      }
+      
+      .nav-links a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .nav-links a:hover {
+        color: var(--color-dark-gray);
+      }
+      
+      main {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+      }
+      
+      .post-list {
+        display: grid;
+        gap: 2rem;
+      }
+      
+      .post-card {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: box-shadow 0.3s ease;
+      }
+      
+      .post-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      
+      .post-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .post-title a {
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .post-excerpt {
+        color: var(--color-medium-gray);
+        margin-bottom: 1rem;
+      }
+      
+      .read-more {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      
+      .post-content {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      
+      .post-content h1, .post-content h2, .post-content h3 {
+        margin-bottom: 1rem;
+        color: var(--color-dark-gray);
+      }
+      
+      .post-content p {
+        margin-bottom: 1rem;
+      }
+      
+      .post-content p a {
+        color: rgb(33, 37, 41);
+        text-decoration: none;
+      }
+      
+      .back-link {
+        display: inline-block;
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        margin-bottom: 2rem;
+      }
+      
+      footer {
+        background-color: var(--color-light-silver);
+        border-top: 1px solid var(--color-smoke-gray);
+        padding: 2rem 0;
+        text-align: center;
+        color: var(--color-medium-gray);
+      }
+      
+      .language-switcher {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      
+      .language-switcher a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .language-switcher a:hover {
+        background-color: var(--color-smoke-gray);
+      }
+      
+      .language-switcher a.active {
+        background-color: var(--color-smoke-gray);
+        color: var(--color-dark-gray);
+      }
+      
+      @media (max-width: 768px) {
+        .nav-links {
+          gap: 1rem;
+        }
+        
+        .container {
+          padding: 0 15px;
+        }
+        
+        .post-content {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index-en.html" class="logo">
+        Danilo Paissan
+      </a>
+      <div style="display: flex; align-items: center; gap: 2rem;">
+        <ul class="nav-links">
+          <li><a href="index-en.html">Home</a></li>
+          <li><a href="about.html">About Me</a></li>
+        </ul>
+        <div class="language-switcher">
+          <a href="javascript:switchLanguage('en')" class="active">EN</a>
+          <span>|</span>
+          <a href="javascript:switchLanguage('it')" class="">IT</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+  <main class="container">
+    
+      <a href="index-en.html" class="back-link">&larr; Back to home</a>
+      <article class="post-content">
+        <h1>SimplePress: Anatomy of a Static Site Generator</h1>
+        <hr>
+<h2>A Thirty-Year Journey on the Web</h2>
+<p>Before diving into the technical details, let me tell you a personal story. A story I probably share with many of you.</p>
+<p>Thirty years ago, when I first started navigating the web, sites were static by definition. Hand-written HTML files, maybe with some animated GIF images and a questionable tiled background. It was a pioneering era: you learned HTML from scattered tutorials online, uploaded files via FTP, and each page was a small handcrafted artifact. There was something genuine in that simplicity.</p>
+<p>Then WordPress came along, and with it the promise of making everything easier. And for a while, it was true. I enthusiastically embraced the world of dynamic CMS: databases, PHP, themes, plugins. You could do anything! Need a contact form? There&#39;s a plugin for that. A carousel? A plugin. SEO? Plugin. Every problem had its pre-packaged solution.</p>
+<p>But complexity grows insidiously. One plugin leads to another, themes become frameworks, updates pile up, and before you know it you&#39;re managing a fragile ecosystem where every update risks breaking something. I spent more time debugging plugin conflicts than writing content. Maintenance had become a job... a job I was already doing eight hours a day.</p>
+<p>There was a period of rejection, I admit. I stopped writing on the web partly because managing the whole setup had become a hassle. The site sat there, with its obsolete plugins and potential vulnerabilities, like an abandoned garden that makes you feel guilty every time you walk past it.</p>
+<p>Then I decided to start again, but with a different approach. <strong>Minimalist</strong>. Only what I need. I wanted to return to that original simplicity, but with modern tools. No database, no heavy CMS, no dependencies that break. Just text files that become web pages. And that&#39;s how SimplePress was born.</p>
+<h3>The Advantages of Static Sites</h3>
+<p>A static site consists only of HTML, CSS, and JavaScript files. There&#39;s no database, no application server, no queries to optimize. The advantages are significant:</p>
+<p><strong>Speed</strong>: without server-side processing, pages are served instantly. Response time is limited only by network latency.</p>
+<p><strong>Security</strong>: no database means no SQL injection. No CMS means no vulnerabilities to patch. The attack surface is reduced to a minimum.</p>
+<p><strong>Costs</strong>: a static site can be hosted for free on GitHub Pages, Netlify, or a simple S3 bucket. No server costs, no scaling to manage.</p>
+<p><strong>Reliability</strong>: fewer components means fewer things that can break. A static site on a CDN has virtually guaranteed uptime.</p>
+<h3>Owning Your Content</h3>
+<p>There&#39;s another aspect that&#39;s particularly close to my heart, and it goes beyond technical considerations: <strong>ownership of your content</strong>.</p>
+<p>We live in an era where we entrust our words, our thoughts, our creations to third-party platforms. Social networks, blogging services, newsletter platforms. It&#39;s convenient, sure. Someone else takes care of the infrastructure, you just have to write.</p>
+<p>But at what cost? Your content exists as long as the platform decides it can exist. A policy change, an algorithm that decides you&#39;re less visible, a service that shuts down (remember Google+? Vine? Tumblr in its original form?), and years of effort can vanish or become inaccessible.</p>
+<p>And then there&#39;s the issue of monetization of your content by others. When you write on a free platform, you are the product. Your texts, your interactions, your data feed advertising algorithms and business models that don&#39;t belong to you.</p>
+<p>A static site, hosted on a service you control (even just a GitHub repository), gives you back this ownership. The files are yours, in an open and portable format. You can move them wherever you want, whenever you want. You can back them up, archive them, ensure they will exist as long as you decide.</p>
+<p>That&#39;s why I believe a simple approach to web publishing is not just a technical choice, but also a principled one. A way to reclaim a piece of digital sovereignty in a world where we tend to delegate more and more.</p>
+<p>For a personal blog, a portfolio, or a documentation site, these characteristics often outweigh the flexibility of a traditional CMS. And it&#39;s exactly in this context that SimplePress was born.</p>
+<hr>
+<h2>The Architecture of SimplePress</h2>
+<p>SimplePress follows a modular and clean architecture, organized into components with well-defined responsibilities. Let&#39;s see how the project is structured:</p>
+<pre><code>simplepress/
+├── md-src/              # Markdown sources
+│   ├── 01.md           # Numbered posts (chronological order)
+│   ├── 02.md           # Other posts...
+│   ├── 01-en.md        # English translations
+│   └── chi-sono.md     # &quot;About me&quot; page
+├── src/                # TypeScript code
+│   ├── index.ts        # CLI entry point
+│   ├── site-generator.ts
+│   ├── markdown-parser.ts
+│   ├── template-engine.ts
+│   ├── types.ts
+│   └── config.ts
+├── build/              # Generated HTML output
+└── dist/               # Compiled TypeScript
+</code></pre>
+<p>The separation is clear: content resides in <code>md-src/</code> as Markdown files, source code lives in <code>src/</code>, and the final output is generated in <code>build/</code>. This approach keeps each component isolated and easily replaceable.</p>
+<h3>The TypeScript Modules</h3>
+<p>The heart of SimplePress consists of six TypeScript modules, each with a specific responsibility:</p>
+<p><strong><code>types.ts</code></strong> - The Foundations of the Type System</p>
+<pre><code class="language-typescript">export interface Post {
+  id: string;
+  title: string;
+  titleEn?: string;
+  content: string;
+  contentEn?: string;
+  excerpt: string;
+  excerptEn?: string;
+  filename: string;
+  order: number;
+  createdAt: Date;
+}
+
+export interface Page {
+  id: string;
+  title: string;
+  titleEn?: string;
+  content: string;
+  contentEn?: string;
+  filename: string;
+}
+
+export type Language = &#39;it&#39; | &#39;en&#39;;
+</code></pre>
+<p>These interfaces define the contract that runs through the entire application. A <code>Post</code> has a title, content, an excerpt (summary), and optionally the English versions of each. The <code>order</code> field determines chronological ordering: lower numbers represent older posts.</p>
+<p><strong><code>config.ts</code></strong> - Centralized Configuration</p>
+<pre><code class="language-typescript">export const siteConfig: SiteConfig = {
+  title: &#39;Danilo Paissan&#39;,
+  titleEn: &#39;Danilo Paissan&#39;,
+  description: &#39;Trentino dentro, ligure fuori&#39;,
+  descriptionEn: &#39;Trentino inside, ligurian outside&#39;,
+  author: &#39;Danilo Paissan&#39;,
+  colorPalette: {
+    pearl: &#39;#F8F9FA&#39;,
+    lightSilver: &#39;#E9ECEF&#39;,
+    smokeGray: &#39;#CED4DA&#39;,
+    mediumGray: &#39;#6C757D&#39;,
+    darkGray: &#39;#212529&#39;
+  }
+};
+</code></pre>
+<p>The configuration also includes all user interface translations: navigation labels, cookie banner texts, system messages. Centralizing this information makes it easy to customize the site or add new languages.</p>
+<hr>
+<h2>The Generation Flow</h2>
+<p>The generation process follows a linear and predictable flow. When we run <code>npm run build</code>, the following happens:</p>
+<h3>Phase 1: Content Discovery</h3>
+<p>The <code>SiteGenerator</code> starts by exploring the <code>md-src/</code> directory:</p>
+<pre><code class="language-typescript">private getPostFiles(): string[] {
+  return fs.readdirSync(this.srcDir)
+    .filter(file =&gt; {
+      const isMarkdown = file.endsWith(&#39;.md&#39;);
+      const isNumbered = /^\d+/.test(file);
+      const isNotAboutPage = !file.startsWith(&#39;chi-sono&#39;);
+      const isNotEnglishTranslation = !file.endsWith(&#39;-en.md&#39;);
+      return isMarkdown &amp;&amp; isNumbered &amp;&amp; isNotAboutPage &amp;&amp; isNotEnglishTranslation;
+    })
+    .map(file =&gt; path.join(this.srcDir, file));
+}
+</code></pre>
+<p>Files are filtered with precise criteria: only Markdown files, with names starting with a number (for posts), excluding the &quot;About me&quot; page and English translations (which will be associated with their respective Italian posts).</p>
+<p>The naming convention is elegant in its simplicity: <code>01.md</code> is the first post, <code>01-en.md</code> is its English translation. The system automatically recognizes this relationship and builds bilingual posts.</p>
+<h3>Phase 2: Markdown Parsing</h3>
+<p>The <code>MarkdownParser</code> handles transforming Markdown files into usable data structures. It uses the <strong>marked</strong> library for HTML conversion, but adds important features.</p>
+<p><strong>Metadata Extraction (Frontmatter)</strong></p>
+<p>SimplePress supports YAML frontmatter for specifying optional metadata:</p>
+<pre><code class="language-markdown">---
+title: Custom Title
+titleEn: Custom English Title
+---
+
+# The Title in the Content
+Here begins the actual content...
+</code></pre>
+<p>The parser extracts this metadata and separates it from the main content:</p>
+<pre><code class="language-typescript">private extractMetadata(content: string): { metadata: Record&lt;string, string&gt;, cleanContent: string } {
+  const lines = content.split(&#39;\n&#39;);
+  const metadata: Record&lt;string, string&gt; = {};
+  
+  if (lines[0]?.trim() === &#39;---&#39;) {
+    const endIndex = lines.findIndex((line, index) =&gt; index &gt; 0 &amp;&amp; line.trim() === &#39;---&#39;);
+    if (endIndex &gt; 0) {
+      for (let i = 1; i &lt; endIndex; i++) {
+        const line = lines[i];
+        // ... metadata parsing logic
+      }
+    }
+  }
+  // ...
+}
+</code></pre>
+<h3>Handling Untranslated Posts</h3>
+<p>What happens if a user tries to access the English version of an untranslated post? SimplePress generates an &quot;unavailable&quot; page with an appropriate message, instead of showing an error or the Italian content. It&#39;s a touch of attention to user experience.</p>
+<hr>
+<h2>GDPR Compliance: The Cookie Banner</h2>
+<p>In an era of growing attention to privacy, SimplePress includes a cookie management system compliant with GDPR and the ePrivacy directive.</p>
+<h3>The Paradox of the Cookie-Free Site</h3>
+<p>Here&#39;s an interesting aspect: SimplePress doesn&#39;t use tracking or profiling cookies. Technically, no banner might be needed. However, regulations require informing users even about the use of technical cookies (such as those used to store consent itself).</p>
+<h3>The Implementation</h3>
+<p>The cookie banner appears on first access and offers two options: Accept or Reject.</p>
+<pre><code class="language-javascript">function checkCookieConsent() {
+  const consent = localStorage.getItem(&#39;cookieConsent&#39;);
+  if (consent === &#39;rejected&#39;) {
+    document.body.innerHTML = `
+      &lt;div class=&quot;cookie-rejected&quot;&gt;
+        &lt;h2&gt;You must accept cookies to access the site.&lt;/h2&gt;
+        &lt;button onclick=&quot;resetCookieConsent()&quot;&gt;I Accept&lt;/button&gt;
+      &lt;/div&gt;
+    `;
+    return;
+  }
+  if (!consent) {
+    document.getElementById(&#39;cookie-banner&#39;).style.display = &#39;block&#39;;
+  }
+}
+</code></pre>
+<p>If the user rejects cookies, access to the site is blocked. It may seem drastic, but it&#39;s a legitimate choice: the site transparently declares that it doesn&#39;t use tracking cookies, and the user can choose not to proceed.</p>
+<p>Consent is stored in <code>localStorage</code>, which is technically not a cookie but local browser storage. This choice avoids the paradox of the &quot;cookie to remember you don&#39;t want cookies.&quot;</p>
+<hr>
+<h2>The Build System</h2>
+<p>SimplePress offers several commands to manage the development cycle:</p>
+<pre><code class="language-bash">npm run setup     # Install dependencies and compile
+npm run build     # Compile TypeScript and generate the site
+npm run generate  # Generation only (TypeScript already compiled)
+npm run watch     # Automatically regenerate on changes
+npm run serve     # Local server for preview
+npm run clean     # Remove generated files
+</code></pre>
+<h3>Watch Mode</h3>
+<p>Watch mode is particularly useful while writing:</p>
+<pre><code class="language-typescript">watch(): void {
+  console.log(`Watching ${this.srcDir} for changes...`);
+  
+  fs.watch(this.srcDir, { recursive: true }, (eventType, filename) =&gt; {
+    if (filename &amp;&amp; (filename.endsWith(&#39;.md&#39;) || filename.includes(&#39;img/&#39;))) {
+      console.log(`File changed: ${filename}`);
+      console.log(&#39;Regenerating site...&#39;);
+      this.generate();
+    }
+  });
+}
+</code></pre>
+<p>Every change to a Markdown file or image triggers a complete site regeneration. For a blog with a few dozen posts, this operation is instantaneous.</p>
+<h3>Image Handling</h3>
+<p>SimplePress automatically copies images from <code>md-src/img/</code> to <code>build/img/</code>:</p>
+<pre><code class="language-typescript">private copyImages(): void {
+  const srcImgDir = path.join(this.srcDir, &#39;img&#39;);
+  const buildImgDir = path.join(this.buildDir, &#39;img&#39;);
+
+  if (!fs.existsSync(srcImgDir)) {
+    return;
+  }
+
+  if (!fs.existsSync(buildImgDir)) {
+    fs.mkdirSync(buildImgDir, { recursive: true });
+  }
+
+  const files = fs.readdirSync(srcImgDir);
+  for (const file of files) {
+    const srcFile = path.join(srcImgDir, file);
+    const buildFile = path.join(buildImgDir, file);
+    
+    if (fs.statSync(srcFile).isFile()) {
+      fs.copyFileSync(srcFile, buildFile);
+    }
+  }
+}
+</code></pre>
+<p>In Markdown, images can be referenced with relative paths: <code>![Description](img/my-image.png)</code>.</p>
+<hr>
+<h2>The Design System</h2>
+<p>SimplePress uses a carefully selected color palette, based on gray tones that ensure readability and a professional appearance:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Color</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pearl</td>
+<td>#F8F9FA</td>
+<td>Main background</td>
+</tr>
+<tr>
+<td>Light Silver</td>
+<td>#E9ECEF</td>
+<td>Header and footer</td>
+</tr>
+<tr>
+<td>Smoke Gray</td>
+<td>#CED4DA</td>
+<td>Borders</td>
+</tr>
+<tr>
+<td>Medium Gray</td>
+<td>#6C757D</td>
+<td>Secondary text</td>
+</tr>
+<tr>
+<td>Dark Gray</td>
+<td>#212529</td>
+<td>Main text</td>
+</tr>
+</tbody></table>
+<p>This neutral palette works well for textual content, where the focus should remain on the content itself rather than the interface.</p>
+<h3>Responsive Design</h3>
+<p>The styles include media queries to adapt to smaller screens:</p>
+<pre><code class="language-css">@media (max-width: 768px) {
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  .post-content {
+    padding: 1.5rem;
+  }
+}
+</code></pre>
+<p>The layout is mobile-first: it works well on smartphones and expands elegantly on larger screens.</p>
+<hr>
+<h2>Extensibility and Customization</h2>
+<p>SimplePress is designed to be easily customizable:</p>
+<p><strong>Configuration</strong>: by modifying <code>src/config.ts</code> you can change the title, description, author, color palette, and all translations.</p>
+<p><strong>Styles</strong>: the CSS in <code>template-engine.ts</code> can be modified to completely change the site&#39;s appearance.</p>
+<p><strong>Structure</strong>: by adding new page types in <code>types.ts</code> and related generation methods, you can extend the system.</p>
+<p><strong>Translations</strong>: by adding new keys in <code>translations</code>, support for other languages is immediate (although it would require changes to the <code>Language</code> type).</p>
+<hr>
+<h2>Conclusions</h2>
+<p>SimplePress represents a minimalist but complete approach to static site generation. It doesn&#39;t compete with Hugo or Jekyll for features, but offers something different: a readable and modifiable codebase that can be fully understood in an afternoon.</p>
+<p>For those managing a personal blog or a small site, this level of control is valuable. There are no mysterious dependencies, no magical behaviors to debug, no updates that risk breaking everything.</p>
+<p>The choice of TypeScript ensures type safety and autocompletion during development. The modular architecture allows modifying one component without impacting others. Native bilingual support avoids the complexity of external plugins. And out-of-the-box GDPR compliance eliminates a common concern for European sites.</p>
+<hr>
+<p><em>Want to try SimplePress? The setup is simple:</em></p>
+<pre><code class="language-bash">git clone [repository]
+cd simplepress
+npm run setup
+# Add your content in md-src/
+npm run build
+npm run serve
+# Visit http://localhost:8000
+</code></pre>
+<p><em>Your static, bilingual, and GDPR-compliant blog is ready in minutes.</em></p>
+      </article>
+    
+  </main>
+  
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Danilo Paissan. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  
+      <div id="cookie-banner" class="cookie-banner" style="display: none;">
+        <div class="cookie-content">
+          <h3>Cookie Notice</h3>
+          <p>This site does not use tracking or profiling cookies. Technical cookies are only used for site functionality.</p>
+          <div class="cookie-buttons">
+            <button onclick="acceptCookies()" class="btn-accept">Accept</button>
+            <button onclick="rejectCookies()" class="btn-reject">Reject</button>
+          </div>
+        </div>
+      </div>
+      
+      <style>
+        .cookie-banner {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: var(--color-dark-gray);
+          color: white;
+          z-index: 1000;
+          padding: 1rem;
+        }
+        
+        .cookie-content {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        
+        .cookie-content h3 {
+          margin-bottom: 0.5rem;
+        }
+        
+        .cookie-content p {
+          margin-bottom: 1rem;
+        }
+        
+        .cookie-buttons {
+          display: flex;
+          gap: 1rem;
+        }
+        
+        .cookie-buttons button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+        }
+        
+        .btn-accept {
+          background: var(--color-light-silver);
+          color: var(--color-dark-gray);
+        }
+        
+        .btn-reject {
+          background: var(--color-medium-gray);
+          color: white;
+        }
+        
+        .cookie-rejected {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          text-align: center;
+        }
+      </style>
+      
+      <script>
+        function checkCookieConsent() {
+          const consent = localStorage.getItem('cookieConsent');
+          if (consent === 'rejected') {
+            document.body.innerHTML = `
+              <div class="cookie-rejected">
+                <h2>You need to accept cookies to access the site.</h2>
+                <button onclick="resetCookieConsent()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-medium-gray); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Accept
+                </button>
+              </div>
+            `;
+            return;
+          }
+          if (!consent) {
+            document.getElementById('cookie-banner').style.display = 'block';
+          }
+        }
+        
+        function acceptCookies() {
+          localStorage.setItem('cookieConsent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+        }
+        
+        function rejectCookies() {
+          localStorage.setItem('cookieConsent', 'rejected');
+          location.reload();
+        }
+        
+        function resetCookieConsent() {
+          localStorage.removeItem('cookieConsent');
+          location.reload();
+        }
+        
+        // Check consent on page load
+        document.addEventListener('DOMContentLoaded', checkCookieConsent);
+      </script>
+    
+  
+  <script>
+    function switchLanguage(lang) {
+      const currentPath = window.location.pathname;
+      const filename = currentPath.split('/').pop() || 'index.html';
+      
+      let newFilename;
+      if (lang === 'en') {
+        if (filename === 'index.html') {
+          newFilename = 'index-en.html';
+        } else if (filename === 'chi-sono.html') {
+          newFilename = 'about.html';
+        } else if (!filename.includes('-en.html')) {
+          newFilename = filename.replace('.html', '-en.html');
+        } else {
+          newFilename = filename;
+        }
+      } else {
+        if (filename === 'index-en.html') {
+          newFilename = 'index.html';
+        } else if (filename === 'about.html') {
+          newFilename = 'chi-sono.html';
+        } else if (filename.includes('-en.html')) {
+          newFilename = filename.replace('-en.html', '.html');
+        } else {
+          newFilename = filename;
+        }
+      }
+      
+      window.location.href = newFilename;
+    }
+  </script>
+</body>
+</html>
