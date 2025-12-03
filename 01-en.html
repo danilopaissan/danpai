@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modular Monolith Architecture: The Return to the Monolith (Done Right) - Danilo Paissan</title>
+  <title>SimplePress: Anatomy of a Static Site Generator - Danilo Paissan</title>
   <meta name="description" content="Trentino inside, ligurian outside">
   <style>
       :root {
@@ -236,489 +236,298 @@
     
       <a href="index-en.html" class="back-link">&larr; Back to home</a>
       <article class="post-content">
-        <h1>Modular Monolith Architecture: The Return to the Monolith (Done Right)</h1>
-        <p>In the software development landscape, application architectures have gone through different eras, each with its own promises and trade-offs. Today we&#39;re witnessing an interesting phenomenon: after years of rushing toward microservices, many organizations are rediscovering the value of a simpler yet structured architecture. Welcome to the era of the <strong>Modular Monolith</strong>.</p>
+        <h1>SimplePress: Anatomy of a Static Site Generator</h1>
+        <hr>
+<h2>A Thirty-Year Journey on the Web</h2>
+<p>Before diving into the technical details, let me tell you a personal story. A story I probably share with many of you.</p>
+<p>Thirty years ago, when I first started navigating the web, sites were static by definition. Hand-written HTML files, maybe with some animated GIF images and a questionable tiled background. It was a pioneering era: you learned HTML from scattered tutorials online, uploaded files via FTP, and each page was a small handcrafted artifact. There was something genuine in that simplicity.</p>
+<p>Then WordPress came along, and with it the promise of making everything easier. And for a while, it was true. I enthusiastically embraced the world of dynamic CMS: databases, PHP, themes, plugins. You could do anything! Need a contact form? There&#39;s a plugin for that. A carousel? A plugin. SEO? Plugin. Every problem had its pre-packaged solution.</p>
+<p>But complexity grows insidiously. One plugin leads to another, themes become frameworks, updates pile up, and before you know it you&#39;re managing a fragile ecosystem where every update risks breaking something. I spent more time debugging plugin conflicts than writing content. Maintenance had become a job... a job I was already doing eight hours a day.</p>
+<p>There was a period of rejection, I admit. I stopped writing on the web partly because managing the whole setup had become a hassle. The site sat there, with its obsolete plugins and potential vulnerabilities, like an abandoned garden that makes you feel guilty every time you walk past it.</p>
+<p>Then I decided to start again, but with a different approach. <strong>Minimalist</strong>. Only what I need. I wanted to return to that original simplicity, but with modern tools. No database, no heavy CMS, no dependencies that break. Just text files that become web pages. And that&#39;s how SimplePress was born.</p>
+<h3>The Advantages of Static Sites</h3>
+<p>A static site consists only of HTML, CSS, and JavaScript files. There&#39;s no database, no application server, no queries to optimize. The advantages are significant:</p>
+<p><strong>Speed</strong>: without server-side processing, pages are served instantly. Response time is limited only by network latency.</p>
+<p><strong>Security</strong>: no database means no SQL injection. No CMS means no vulnerabilities to patch. The attack surface is reduced to a minimum.</p>
+<p><strong>Costs</strong>: a static site can be hosted for free on GitHub Pages, Netlify, or a simple S3 bucket. No server costs, no scaling to manage.</p>
+<p><strong>Reliability</strong>: fewer components means fewer things that can break. A static site on a CDN has virtually guaranteed uptime.</p>
+<h3>Owning Your Content</h3>
+<p>There&#39;s another aspect that&#39;s particularly close to my heart, and it goes beyond technical considerations: <strong>ownership of your content</strong>.</p>
+<p>We live in an era where we entrust our words, our thoughts, our creations to third-party platforms. Social networks, blogging services, newsletter platforms. It&#39;s convenient, sure. Someone else takes care of the infrastructure, you just have to write.</p>
+<p>But at what cost? Your content exists as long as the platform decides it can exist. A policy change, an algorithm that decides you&#39;re less visible, a service that shuts down (remember Google+? Vine? Tumblr in its original form?), and years of effort can vanish or become inaccessible.</p>
+<p>And then there&#39;s the issue of monetization of your content by others. When you write on a free platform, you are the product. Your texts, your interactions, your data feed advertising algorithms and business models that don&#39;t belong to you.</p>
+<p>A static site, hosted on a service you control (even just a GitHub repository), gives you back this ownership. The files are yours, in an open and portable format. You can move them wherever you want, whenever you want. You can back them up, archive them, ensure they will exist as long as you decide.</p>
+<p>That&#39;s why I believe a simple approach to web publishing is not just a technical choice, but also a principled one. A way to reclaim a piece of digital sovereignty in a world where we tend to delegate more and more.</p>
+<p>For a personal blog, a portfolio, or a documentation site, these characteristics often outweigh the flexibility of a traditional CMS. And it&#39;s exactly in this context that SimplePress was born.</p>
 <hr>
-<h2>A Journey Through the History of Architectures</h2>
-<h3>The Era of the Traditional Monolith</h3>
-<p>In the early days of enterprise development, the monolith was the only practical option. One application, one deployment, one database. Simplicity was its strength: all the code resided in a single project, debugging was straightforward, and ACID transactions guaranteed data consistency without particular effort.</p>
-<p>But the traditional monolith brought significant problems with it. As the application grew, the code became an intricate tangle of dependencies. The famous <em>Big Ball of Mud</em> wasn&#39;t an exception, but the norm. Modifying one feature meant risking breaking ten others. Deployment required releasing the entire application, even for a single fix. And scaling meant replicating everything, even components that didn&#39;t need it.</p>
-<p><strong>Pros of the traditional monolith:</strong></p>
-<ul>
-<li>Simplicity of initial development and environment setup</li>
-<li>Native ACID transactions and immediate consistency</li>
-<li>Straightforward debugging and tracing</li>
-<li>No network overhead for internal calls</li>
-<li>Simple deployment (a single artifact)</li>
-</ul>
-<p><strong>Cons of the traditional monolith:</strong></p>
-<ul>
-<li>Tight coupling between components</li>
-<li>Only vertical scaling or complete replication</li>
-<li>Risky deployment and long release times</li>
-<li>Difficulty in having multiple teams work in parallel</li>
-<li>Technologies locked into choices made years ago</li>
-</ul>
-<h3>The Advent of SOA</h3>
-<p>Around the turn of the millennium, <strong>Service-Oriented Architecture</strong> promised to solve the monolith&#39;s problems through division into reusable services. The idea was elegant: independent components communicating through standard protocols, orchestrated by an Enterprise Service Bus (ESB).</p>
-<p>SOA introduced important concepts like service contracts, reusability, and interoperability. But in practice, many SOA implementations turned out to be disguised distributed monoliths. The ESB often became a single point of failure and a bottleneck. Complexity had simply shifted, not been eliminated.</p>
-<p><strong>Pros of SOA:</strong></p>
-<ul>
-<li>Service reusability across different applications</li>
-<li>Well-defined communication standards (SOAP, WS-*)</li>
-<li>Centralized governance</li>
-<li>Integration between heterogeneous systems</li>
-</ul>
-<p><strong>Cons of SOA:</strong></p>
-<ul>
-<li>ESB as a single point of failure</li>
-<li>Significant overhead from SOAP/XML protocols</li>
-<li>Configuration and maintenance complexity</li>
-<li>Often resulted in &quot;distributed monolith&quot;</li>
-<li>High licensing costs for enterprise stacks</li>
-</ul>
-<h3>The Microservices Revolution</h3>
-<p>Around 2014, Netflix, Amazon, and other tech companies began evangelizing <strong>microservices</strong>. Small, independent services, each with its own database, independently deployable. It was the promise of true agility: autonomous teams, heterogeneous technologies, granular scalability.</p>
-<p>Microservices worked brilliantly for organizations with hundreds of developers and extreme scale requirements. But for most companies, they introduced disproportionate operational complexity. Managing tens or hundreds of services requires sophisticated infrastructure: service discovery, circuit breakers, distributed tracing, container orchestration. Data consistency, previously guaranteed by ACID transactions, becomes an architectural problem to solve with patterns like Saga or eventual consistency.</p>
-<p><strong>Pros of microservices:</strong></p>
-<ul>
-<li>Independent deployment for each service</li>
-<li>Granular and optimized scalability</li>
-<li>Autonomous teams with clear ownership</li>
-<li>Technology freedom for each service</li>
-<li>Natural fault isolation</li>
-</ul>
-<p><strong>Cons of microservices:</strong></p>
-<ul>
-<li>High operational complexity (orchestration, monitoring, networking)</li>
-<li>Network latency for every call between services</li>
-<li>Difficult to guarantee data consistency</li>
-<li>Complex distributed debugging</li>
-<li>Significant infrastructure overhead</li>
-<li>Requires high DevOps maturity</li>
-</ul>
-<h3>The Present: Modular Monolith</h3>
-<p>The <strong>Modular Monolith</strong> represents a pragmatic synthesis. It maintains the advantages of the monolith (operational simplicity, ACID transactions, absence of network latency) while incorporating the architectural principles that made microservices effective: clear boundaries, low coupling, high cohesion.</p>
-<p>The fundamental idea is to structure the application in <strong>modules</strong> with well-defined boundaries, each responsible for a specific bounded context. Modules communicate through explicit interfaces, not through direct dependencies on other modules&#39; internal code.</p>
-<p><strong>Pros of the modular monolith:</strong></p>
-<ul>
-<li>Operational simplicity of the monolith</li>
-<li>ACID transactions when needed</li>
-<li>Clear and enforced architectural boundaries</li>
-<li>Natural preparation for a potential migration to microservices</li>
-<li>Contained infrastructure costs</li>
-<li>Simpler developer onboarding</li>
-</ul>
-<p><strong>Cons of the modular monolith:</strong></p>
-<ul>
-<li>Requires discipline to maintain module boundaries</li>
-<li>Scalability still limited compared to microservices</li>
-<li>Full application deployment for every change</li>
-<li>Technology stack shared across all modules</li>
-</ul>
-<h4>Typical Project Structure</h4>
-<p>How does modular architecture translate concretely into a project structure? Here&#39;s a representative schema:</p>
-<pre><code>📁 src/
-│
-├── 📁 Modules/
-│   │
-│   ├── 📁 Orders/                          # ORDERS MODULE
-│   │   ├── 📁 Application/                 # Use cases and application logic
-│   │   │   ├── 📁 Commands/
-│   │   │   │   ├── CreateOrder/
-│   │   │   │   │   ├── CreateOrderCommand.cs
-│   │   │   │   │   └── CreateOrderHandler.cs
-│   │   │   │   └── CompleteOrder/
-│   │   │   │       ├── CompleteOrderCommand.cs
-│   │   │   │       └── CompleteOrderHandler.cs
-│   │   │   ├── 📁 Queries/
-│   │   │   │   └── GetOrderById/
-│   │   │   │       ├── GetOrderByIdQuery.cs
-│   │   │   │       └── GetOrderByIdHandler.cs
-│   │   │   └── 📁 EventHandlers/           # Handlers for events from OTHER modules
-│   │   │       └── CustomerUpdatedHandler.cs
-│   │   │
-│   │   ├── 📁 Domain/                      # Entities and domain logic
-│   │   │   ├── 📁 Entities/
-│   │   │   │   ├── Order.cs
-│   │   │   │   └── OrderLine.cs
-│   │   │   ├── 📁 ValueObjects/
-│   │   │   │   └── Money.cs
-│   │   │   ├── 📁 Events/                  # Domain events PUBLISHED by this module
-│   │   │   │   ├── OrderCreatedEvent.cs
-│   │   │   │   └── OrderCompletedEvent.cs
-│   │   │   └── 📁 Exceptions/
-│   │   │       └── OrderNotFoundException.cs
-│   │   │
-│   │   ├── 📁 Infrastructure/              # Persistence and external services
-│   │   │   ├── 📁 Persistence/
-│   │   │   │   ├── OrdersDbContext.cs
-│   │   │   │   ├── 📁 Configurations/      # EF Core mapping
-│   │   │   │   │   └── OrderConfiguration.cs
-│   │   │   │   ├── 📁 Repositories/
-│   │   │   │   │   └── OrderRepository.cs
-│   │   │   │   └── 📁 Migrations/
-│   │   │   │       └── 20240115_InitialCreate.cs
-│   │   │   └── 📁 Outbox/                  # Transactional Outbox
-│   │   │       └── OrdersOutboxProcessor.cs
-│   │   │
-│   │   ├── 📁 Contracts/                   # MODULE&#39;S PUBLIC INTERFACE
-│   │   │   ├── 📁 IntegrationEvents/       # Events for other modules
-│   │   │   │   ├── OrderCompletedIntegrationEvent.cs
-│   │   │   │   └── OrderCancelledIntegrationEvent.cs
-│   │   │   └── 📁 Services/                # Public API (interfaces)
-│   │   │       └── IOrderService.cs
-│   │   │
-│   │   └── OrdersModule.cs                 # Module DI registration
-│   │
-│   ├── 📁 Customers/                       # CUSTOMERS MODULE
-│   │   ├── 📁 Application/
-│   │   ├── 📁 Domain/
-│   │   ├── 📁 Infrastructure/
-│   │   ├── 📁 Contracts/
-│   │   │   ├── 📁 IntegrationEvents/
-│   │   │   │   └── CustomerUpdatedIntegrationEvent.cs
-│   │   │   └── 📁 Services/
-│   │   │       └── ICustomerService.cs     # Used by Orders to get customer data
-│   │   └── CustomersModule.cs
-│   │
-│   ├── 📁 Inventory/                       # INVENTORY MODULE
-│   │   ├── 📁 Application/
-│   │   │   └── 📁 EventHandlers/
-│   │   │       └── OrderCompletedHandler.cs  # Reacts to Orders events
-│   │   ├── 📁 Domain/
-│   │   ├── 📁 Infrastructure/
-│   │   │   └── 📁 Idempotency/             # Idempotency management
-│   │   │       └── ProcessedEventsRepository.cs
-│   │   ├── 📁 Contracts/
-│   │   └── InventoryModule.cs
-│   │
-│   └── 📁 Notifications/                   # NOTIFICATIONS MODULE
-│       ├── 📁 Application/
-│       ├── 📁 Domain/
-│       ├── 📁 Infrastructure/
-│       ├── 📁 Contracts/
-│       └── NotificationsModule.cs
-│
-├── 📁 Shared/                              # SHARED CODE (KERNEL)
-│   ├── 📁 Domain/
-│   │   ├── Entity.cs                       # Base class for entities
-│   │   ├── AggregateRoot.cs
-│   │   ├── IDomainEvent.cs
-│   │   └── IIntegrationEvent.cs
-│   ├── 📁 Infrastructure/
-│   │   ├── 📁 EventBus/
-│   │   │   ├── IEventBus.cs
-│   │   │   └── InMemoryEventBus.cs
-│   │   ├── 📁 Outbox/
-│   │   │   ├── OutboxMessage.cs
-│   │   │   └── IOutboxProcessor.cs
-│   │   └── 📁 Idempotency/
-│   │       ├── ProcessedEvent.cs
-│   │       └── IIdempotencyService.cs
-│   └── 📁 Application/
-│       └── 📁 Behaviors/                   # MediatR pipeline
-│           ├── LoggingBehavior.cs
-│           └── TransactionBehavior.cs
-│
-├── 📁 API/                                 # ENTRY POINT (Host)
-│   ├── 📁 Controllers/
-│   │   ├── OrdersController.cs             # Delegates to Orders module
-│   │   ├── CustomersController.cs
-│   │   └── InventoryController.cs
-│   ├── Program.cs                          # Module composition
-│   └── appsettings.json
-│
-└── 📁 Database/
-    └── 📁 Schemas/                         # DDL scripts for schema separation
-        ├── orders_schema.sql
-        ├── customers_schema.sql
-        ├── inventory_schema.sql
-        └── notifications_schema.sql
+<h2>The Architecture of SimplePress</h2>
+<p>SimplePress follows a modular and clean architecture, organized into components with well-defined responsibilities. Let&#39;s see how the project is structured:</p>
+<pre><code>simplepress/
+├── md-src/              # Markdown sources
+│   ├── 01.md           # Numbered posts (chronological order)
+│   ├── 02.md           # Other posts...
+│   ├── 01-en.md        # English translations
+│   └── chi-sono.md     # &quot;About me&quot; page
+├── src/                # TypeScript code
+│   ├── index.ts        # CLI entry point
+│   ├── site-generator.ts
+│   ├── markdown-parser.ts
+│   ├── template-engine.ts
+│   ├── types.ts
+│   └── config.ts
+├── build/              # Generated HTML output
+└── dist/               # Compiled TypeScript
 </code></pre>
-<p><strong>Key points of the structure:</strong></p>
-<ol>
-<li><p><strong>Each module is self-contained</strong>: it contains its own application logic, domain, infrastructure, and contracts. There are no direct dependencies between the internal folders of different modules.</p>
-</li>
-<li><p><strong>Contracts define the public interface</strong>: only what&#39;s in the <code>Contracts</code> folder can be referenced by other modules. This includes Integration Events and public service interfaces.</p>
-</li>
-<li><p><strong>The Shared Kernel is minimal</strong>: it contains only base abstractions (Entity, AggregateRoot, event interfaces) and common infrastructure (EventBus, Outbox). It contains no business logic.</p>
-</li>
-<li><p><strong>The API Host composes the modules</strong>: the API project contains no business logic, it only registers modules and exposes HTTP endpoints.</p>
-</li>
-<li><p><strong>Database with schema separation</strong>: each module has its own SQL schema, guaranteeing logical isolation even on a shared physical database.</p>
-</li>
-</ol>
-<hr>
-<h2>Database Design in the Modular Monolith</h2>
-<p>One of the most underestimated challenges in designing a modular monolith concerns the database. How do you reconcile module autonomy with the existence of a shared database?</p>
-<h3>The fundamental principle: exclusive ownership</h3>
-<p>Each module must have <strong>exclusive ownership</strong> over its own tables. No other module can directly access these tables, neither for reading nor writing. This principle, seemingly rigid, is what allows modules to evolve independently.</p>
-<p>In practice, this translates to:</p>
-<ul>
-<li>Schema separation (or table prefixes) per module</li>
-<li>Access to other modules&#39; data only through the owning module&#39;s public APIs</li>
-<li>No foreign keys between tables of different modules</li>
-</ul>
-<h3>Normalization vs Denormalization: the cross-module reference dilemma</h3>
-<p>When a module needs data managed by another module, an architectural dilemma presents itself. Let&#39;s take a concrete example: the <em>Orders</em> module needs to display customer information, managed by the <em>Customers</em> module.</p>
-<h4>Approach 1: Soft Link (reference via ID)</h4>
-<p>The soft link maintains only the identifier of the external entity.</p>
-<pre><code>-- Table in the Orders module
-CREATE TABLE orders (
-    id UUID PRIMARY KEY,
-    customer_id UUID NOT NULL,  -- Just the ID, no FK to customers
-    order_date TIMESTAMP,
-    total_amount DECIMAL(10,2)
-);
-</code></pre>
-<p>With this approach, every time the Orders module needs customer information (name, email, shipping address), it must invoke the Customers module&#39;s API.</p>
-<p><strong>Advantages of Soft Link:</strong></p>
-<ul>
-<li>Data always updated and consistent</li>
-<li>No information duplication</li>
-<li>The Customers module is the single source of truth</li>
-<li>Changes to customer data immediately visible</li>
-</ul>
-<p><strong>Disadvantages of Soft Link:</strong></p>
-<ul>
-<li>Runtime dependency on the Customers module</li>
-<li>Additional latency for every query requiring customer data</li>
-<li>If the Customers module is slow or unavailable, Orders is affected too</li>
-<li>Complex queries requiring logical joins become inefficient</li>
-</ul>
-<h4>Approach 2: Snapshot (local copy of data)</h4>
-<p>The snapshot maintains a local copy of the necessary data at the time of order creation.</p>
-<pre><code>-- Table in the Orders module
-CREATE TABLE orders (
-    id UUID PRIMARY KEY,
-    customer_id UUID NOT NULL,
-    -- Snapshot of customer data at the time of the order
-    customer_name VARCHAR(255) NOT NULL,
-    customer_email VARCHAR(255) NOT NULL,
-    shipping_address_snapshot JSONB NOT NULL,
-    order_date TIMESTAMP,
-    total_amount DECIMAL(10,2)
-);
-</code></pre>
-<p><strong>Advantages of Snapshot:</strong></p>
-<ul>
-<li>Complete autonomy of the Orders module</li>
-<li>No runtime dependency</li>
-<li>Performant queries without external calls</li>
-<li>Natural historization (the customer&#39;s address at the time of the order is preserved)</li>
-<li>Resilience: Orders works even if Customers is offline</li>
-</ul>
-<p><strong>Disadvantages of Snapshot:</strong></p>
-<ul>
-<li>Data duplication</li>
-<li>Potentially stale data (if the customer changes email)</li>
-<li>Higher storage usage</li>
-<li>Complexity in deciding when and what to snapshot</li>
-</ul>
-<h4>Which approach to choose?</h4>
-<p>The choice depends on the business context:</p>
-<p><strong>Use Soft Link when:</strong></p>
-<ul>
-<li>Data must always be updated in real time</li>
-<li>The referenced entity is subject to frequent relevant changes</li>
-<li>The additional latency is acceptable</li>
-<li>There&#39;s a strong consistency requirement</li>
-</ul>
-<p><strong>Use Snapshot when:</strong></p>
-<ul>
-<li>You need to preserve historical state (what the data was <em>at that moment</em>)</li>
-<li>Module autonomy and performance are priorities</li>
-<li>Snapshotted data rarely changes or changes aren&#39;t relevant to the consumer module</li>
-<li>You want resilience in case of source module failure</li>
-</ul>
-<p>In the case of orders, snapshot is often the right choice: we want to know <em>what address the order was shipped to</em>, not the customer&#39;s current address.</p>
-<hr>
-<h2>Asynchronous Communication Between Modules</h2>
-<p>In a well-designed modular monolith, communication between modules occurs primarily <strong>asynchronously</strong> through events. This pattern, borrowed from the microservices world, brings significant benefits even within a single process.</p>
-<h3>Why asynchronous?</h3>
-<p>Synchronous communication (direct calls to another module&#39;s public methods) creates temporal coupling: the calling module must wait for the response, and if the called module is slow or fails, the problem propagates.</p>
-<p>Asynchronous communication through events reverses this dynamic:</p>
-<ul>
-<li>The producer module publishes an event and proceeds immediately</li>
-<li>Interested modules react to the event when and how they prefer</li>
-<li>Coupling is reduced: the producer doesn&#39;t know the consumers</li>
-</ul>
-<h3>Practical implementation</h3>
-<p>In a modular monolith, events can travel through:</p>
-<ul>
-<li>An in-process message broker (like MediatR in .NET or a custom EventBus)</li>
-<li>An internal persistent queue (database table used as a queue)</li>
-<li>An external broker (RabbitMQ, Kafka) for greater resilience</li>
-</ul>
-<p>An example flow:</p>
-<pre><code>1. The Orders module completes an order
-2. Orders publishes the &quot;OrderCompleted&quot; event with relevant data
-3. The Inventory module receives the event and decrements stock
-4. The Notifications module receives the event and sends the confirmation email
-5. The Analytics module receives the event and updates statistics
-</code></pre>
-<p>Each module reacts independently, without Orders needing to know about the existence of Inventory, Notifications, or Analytics.</p>
-<hr>
-<h2>Transactional Outbox: Guaranteeing Event Delivery</h2>
-<p>One of the most insidious problems in asynchronous communication is guaranteeing that events are actually published. Consider this scenario:</p>
-<pre><code>BEGIN TRANSACTION;
-    UPDATE orders SET status = &#39;completed&#39; WHERE id = ?;
-    -- Publish event to message broker
-COMMIT;
-</code></pre>
-<p>What happens if the database commit succeeds, but event publication fails (network timeout, broker unavailable)? The order appears completed in the database, but no other module is informed. We have an <strong>inconsistency</strong>.</p>
-<p>The opposite problem is equally serious: if we publish the event before the commit and then the commit fails, we&#39;ve notified an event for an operation that never happened.</p>
-<h3>The solution: Transactional Outbox Pattern</h3>
-<p>The <strong>Transactional Outbox</strong> pattern elegantly solves this problem using the database itself as a buffer for events.</p>
-<pre><code>BEGIN TRANSACTION;
-    -- 1. Execute the business operation
-    UPDATE orders SET status = &#39;completed&#39; WHERE id = ?;
-    
-    -- 2. Write the event to the outbox table (same transaction!)
-    INSERT INTO outbox (id, event_type, payload, created_at, processed)
-    VALUES (?, &#39;OrderCompleted&#39;, &#39;{&quot;orderId&quot;: &quot;...&quot;, ...}&#39;, NOW(), false);
-COMMIT;
-</code></pre>
-<p>The outbox table might have this structure:</p>
-<pre><code class="language-sql">CREATE TABLE outbox (
-    id UUID PRIMARY KEY,
-    event_type VARCHAR(255) NOT NULL,
-    payload JSONB NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    processed BOOLEAN DEFAULT false,
-    processed_at TIMESTAMP NULL,
-    retry_count INT DEFAULT 0
-);
-</code></pre>
-<p>A separate process (Outbox Processor) periodically reads the outbox table and publishes events not yet processed:</p>
-<pre><code>1. SELECT * FROM outbox WHERE processed = false ORDER BY created_at LIMIT 100;
-2. For each record:
-   a. Publish the event to the message broker
-   b. UPDATE outbox SET processed = true, processed_at = NOW() WHERE id = ?;
-</code></pre>
-<h3>Advantages of Transactional Outbox</h3>
-<ul>
-<li><strong>Guaranteed atomicity</strong>: the event is written in the same transaction as the business operation</li>
-<li><strong>At-least-once delivery</strong>: if publication fails, the event remains in the outbox and will be retried</li>
-<li><strong>Order preserved</strong>: events are processed in creation order</li>
-<li><strong>Resilience</strong>: the system tolerates temporary message broker downtime</li>
-<li><strong>Auditability</strong>: the outbox table serves as a log of published events</li>
-</ul>
-<h3>Implementation Considerations</h3>
-<p>The publication process can be implemented as:</p>
-<ul>
-<li>A scheduled job (polling the table every N seconds)</li>
-<li>A background worker using LISTEN/NOTIFY (PostgreSQL) or Change Data Capture</li>
-<li>A separate process with exponential backoff logic for retries</li>
-</ul>
-<hr>
-<h2>Consumer Idempotency</h2>
-<p>If the Transactional Outbox guarantees <strong>at-least-once delivery</strong>, we must prepare for the possibility that the same event is delivered multiple times. This can happen for various reasons:</p>
-<ul>
-<li>The consumer processes the event but crashes before confirming successful processing</li>
-<li>Temporary network partition causes automatic retries</li>
-<li>Bug in the messaging system</li>
-</ul>
-<p>An <strong>idempotent</strong> consumer is a consumer that produces the same result regardless of how many times it receives the same message.</p>
-<h3>The double processing problem</h3>
-<p>Imagine the Inventory module receives the <code>OrderCompleted</code> event twice for the same order. Without protections:</p>
-<pre><code>Event 1: OrderCompleted(orderId: 123, items: [{sku: &quot;ABC&quot;, qty: 2}])
-  → Inventory decrements ABC by 2 units (stock: 100 → 98)
+<p>The separation is clear: content resides in <code>md-src/</code> as Markdown files, source code lives in <code>src/</code>, and the final output is generated in <code>build/</code>. This approach keeps each component isolated and easily replaceable.</p>
+<h3>The TypeScript Modules</h3>
+<p>The heart of SimplePress consists of six TypeScript modules, each with a specific responsibility:</p>
+<p><strong><code>types.ts</code></strong> - The Foundations of the Type System</p>
+<pre><code class="language-typescript">export interface Post {
+  id: string;
+  title: string;
+  titleEn?: string;
+  content: string;
+  contentEn?: string;
+  excerpt: string;
+  excerptEn?: string;
+  filename: string;
+  order: number;
+  createdAt: Date;
+}
 
-Event 2 (duplicate): OrderCompleted(orderId: 123, items: [{sku: &quot;ABC&quot;, qty: 2}])
-  → Inventory decrements ABC by 2 units (stock: 98 → 96)  // ERROR!
+export interface Page {
+  id: string;
+  title: string;
+  titleEn?: string;
+  content: string;
+  contentEn?: string;
+  filename: string;
+}
+
+export type Language = &#39;it&#39; | &#39;en&#39;;
 </code></pre>
-<p>The result is incorrect stock. In other contexts (payments, shipments), the consequences could be much more serious.</p>
-<h3>Idempotency Key: the solution</h3>
-<p>The most robust strategy to guarantee idempotency is to use an <strong>Idempotency Key</strong>: a unique identifier associated with each event that allows recognizing duplicates.</p>
-<pre><code class="language-sql">CREATE TABLE processed_events (
-    idempotency_key VARCHAR(255) PRIMARY KEY,
-    processed_at TIMESTAMP NOT NULL,
-    result JSONB NULL  -- Optional: stores the result to respond to duplicates
-);
+<p>These interfaces define the contract that runs through the entire application. A <code>Post</code> has a title, content, an excerpt (summary), and optionally the English versions of each. The <code>order</code> field determines chronological ordering: lower numbers represent older posts.</p>
+<p><strong><code>config.ts</code></strong> - Centralized Configuration</p>
+<pre><code class="language-typescript">export const siteConfig: SiteConfig = {
+  title: &#39;Danilo Paissan&#39;,
+  titleEn: &#39;Danilo Paissan&#39;,
+  description: &#39;Trentino dentro, ligure fuori&#39;,
+  descriptionEn: &#39;Trentino inside, ligurian outside&#39;,
+  author: &#39;Danilo Paissan&#39;,
+  colorPalette: {
+    pearl: &#39;#F8F9FA&#39;,
+    lightSilver: &#39;#E9ECEF&#39;,
+    smokeGray: &#39;#CED4DA&#39;,
+    mediumGray: &#39;#6C757D&#39;,
+    darkGray: &#39;#212529&#39;
+  }
+};
 </code></pre>
-<p>The consumer, before processing an event, checks if it has already been processed:</p>
-<pre><code class="language-python">def handle_order_completed(event):
-    idempotency_key = f&quot;OrderCompleted:{event.order_id}&quot;
-    
-    # Check if already processed
-    if exists_in_processed_events(idempotency_key):
-        logger.info(f&quot;Event already processed, ignoring: {idempotency_key}&quot;)
-        return
-    
-    # Process the event
-    with transaction():
-        decrement_inventory(event.items)
-        
-        # Record the processing (same transaction!)
-        insert_processed_event(idempotency_key)
-</code></pre>
-<h3>Best practices for Idempotency Key</h3>
-<p><strong>Key composition</strong>: the idempotency key should uniquely identify the operation, not just the message. A good key could be:</p>
-<ul>
-<li><code>{event_type}:{entity_id}</code> for simple events</li>
-<li><code>{event_type}:{entity_id}:{version}</code> if the entity can generate multiple events of the same type</li>
-<li><code>{event_type}:{correlation_id}</code> for complex flows</li>
-</ul>
-<p><strong>Key storage</strong>: registering the idempotency key must happen in the same transaction as the processing. Otherwise, if the system crashes between processing and registration, the duplicate will be processed again.</p>
-<p><strong>Periodic cleanup</strong>: the <code>processed_events</code> table will grow over time. Implement a retention policy (e.g., delete records older than 30 days) based on your redelivery SLA.</p>
-<p><strong>Response to duplicates</strong>: in some cases, you might want to return the same result of an already completed operation. Storing the result along with the idempotency key allows this.</p>
+<p>The configuration also includes all user interface translations: navigation labels, cookie banner texts, system messages. Centralizing this information makes it easy to customize the site or add new languages.</p>
 <hr>
-<h2>Putting It All Together: A Coherent Architecture</h2>
-<p>Let&#39;s recap how these patterns combine in a well-designed modular monolith:</p>
-<pre><code>┌─────────────────────────────────────────────────────────────────┐
-│                     MODULAR MONOLITH                            │
-│                                                                 │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
-│  │   Orders     │    │  Inventory   │    │Notifications │      │
-│  │   Module     │    │   Module     │    │   Module     │      │
-│  │              │    │              │    │              │      │
-│  │ ┌──────────┐ │    │ ┌──────────┐ │    │ ┌──────────┐ │      │
-│  │ │  Orders  │ │    │ │Inventory │ │    │ │Templates │ │      │
-│  │ │  Table   │ │    │ │  Table   │ │    │ │  Table   │ │      │
-│  │ └──────────┘ │    │ └──────────┘ │    │ └──────────┘ │      │
-│  │ ┌──────────┐ │    │ ┌──────────┐ │    │ ┌──────────┐ │      │
-│  │ │  Outbox  │ │    │ │Processed │ │    │ │Processed │ │      │
-│  │ │  Table   │ │    │ │ Events   │ │    │ │ Events   │ │      │
-│  │ └──────────┘ │    │ └──────────┘ │    │ └──────────┘ │      │
-│  └──────┬───────┘    └──────▲───────┘    └──────▲───────┘      │
-│         │                   │                   │               │
-│         │    ┌──────────────┴───────────────────┘               │
-│         │    │                                                  │
-│         ▼    │                                                  │
-│  ┌───────────┴────┐                                             │
-│  │  Event Bus /   │                                             │
-│  │ Message Broker │                                             │
-│  └────────────────┘                                             │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+<h2>The Generation Flow</h2>
+<p>The generation process follows a linear and predictable flow. When we run <code>npm run build</code>, the following happens:</p>
+<h3>Phase 1: Content Discovery</h3>
+<p>The <code>SiteGenerator</code> starts by exploring the <code>md-src/</code> directory:</p>
+<pre><code class="language-typescript">private getPostFiles(): string[] {
+  return fs.readdirSync(this.srcDir)
+    .filter(file =&gt; {
+      const isMarkdown = file.endsWith(&#39;.md&#39;);
+      const isNumbered = /^\d+/.test(file);
+      const isNotAboutPage = !file.startsWith(&#39;chi-sono&#39;);
+      const isNotEnglishTranslation = !file.endsWith(&#39;-en.md&#39;);
+      return isMarkdown &amp;&amp; isNumbered &amp;&amp; isNotAboutPage &amp;&amp; isNotEnglishTranslation;
+    })
+    .map(file =&gt; path.join(this.srcDir, file));
+}
 </code></pre>
-<p>The typical flow:</p>
-<ol>
-<li><strong>Orders Module</strong> receives an order completion request</li>
-<li>In a single transaction:<ul>
-<li>Updates the order status</li>
-<li>Writes the <code>OrderCompleted</code> event to its <strong>Outbox</strong> table</li>
-</ul>
-</li>
-<li>The <strong>Outbox Processor</strong> reads the event and publishes it to the <strong>Event Bus</strong></li>
-<li><strong>Inventory Module</strong> receives the event:<ul>
-<li>Checks the <strong>Idempotency Key</strong> in the <code>processed_events</code> table</li>
-<li>If new, processes the event and records the key (same transaction)</li>
-<li>If duplicate, ignores it</li>
-</ul>
-</li>
-<li><strong>Notifications Module</strong> follows the same pattern</li>
-</ol>
+<p>Files are filtered with precise criteria: only Markdown files, with names starting with a number (for posts), excluding the &quot;About me&quot; page and English translations (which will be associated with their respective Italian posts).</p>
+<p>The naming convention is elegant in its simplicity: <code>01.md</code> is the first post, <code>01-en.md</code> is its English translation. The system automatically recognizes this relationship and builds bilingual posts.</p>
+<h3>Phase 2: Markdown Parsing</h3>
+<p>The <code>MarkdownParser</code> handles transforming Markdown files into usable data structures. It uses the <strong>marked</strong> library for HTML conversion, but adds important features.</p>
+<p><strong>Metadata Extraction (Frontmatter)</strong></p>
+<p>SimplePress supports YAML frontmatter for specifying optional metadata:</p>
+<pre><code class="language-markdown">---
+title: Custom Title
+titleEn: Custom English Title
+---
+
+# The Title in the Content
+Here begins the actual content...
+</code></pre>
+<p>The parser extracts this metadata and separates it from the main content:</p>
+<pre><code class="language-typescript">private extractMetadata(content: string): { metadata: Record&lt;string, string&gt;, cleanContent: string } {
+  const lines = content.split(&#39;\n&#39;);
+  const metadata: Record&lt;string, string&gt; = {};
+  
+  if (lines[0]?.trim() === &#39;---&#39;) {
+    const endIndex = lines.findIndex((line, index) =&gt; index &gt; 0 &amp;&amp; line.trim() === &#39;---&#39;);
+    if (endIndex &gt; 0) {
+      for (let i = 1; i &lt; endIndex; i++) {
+        const line = lines[i];
+        // ... metadata parsing logic
+      }
+    }
+  }
+  // ...
+}
+</code></pre>
+<h3>Handling Untranslated Posts</h3>
+<p>What happens if a user tries to access the English version of an untranslated post? SimplePress generates an &quot;unavailable&quot; page with an appropriate message, instead of showing an error or the Italian content. It&#39;s a touch of attention to user experience.</p>
+<hr>
+<h2>GDPR Compliance: The Cookie Banner</h2>
+<p>In an era of growing attention to privacy, SimplePress includes a cookie management system compliant with GDPR and the ePrivacy directive.</p>
+<h3>The Paradox of the Cookie-Free Site</h3>
+<p>Here&#39;s an interesting aspect: SimplePress doesn&#39;t use tracking or profiling cookies. Technically, no banner might be needed. However, regulations require informing users even about the use of technical cookies (such as those used to store consent itself).</p>
+<h3>The Implementation</h3>
+<p>The cookie banner appears on first access and offers two options: Accept or Reject.</p>
+<pre><code class="language-javascript">function checkCookieConsent() {
+  const consent = localStorage.getItem(&#39;cookieConsent&#39;);
+  if (consent === &#39;rejected&#39;) {
+    document.body.innerHTML = `
+      &lt;div class=&quot;cookie-rejected&quot;&gt;
+        &lt;h2&gt;You must accept cookies to access the site.&lt;/h2&gt;
+        &lt;button onclick=&quot;resetCookieConsent()&quot;&gt;I Accept&lt;/button&gt;
+      &lt;/div&gt;
+    `;
+    return;
+  }
+  if (!consent) {
+    document.getElementById(&#39;cookie-banner&#39;).style.display = &#39;block&#39;;
+  }
+}
+</code></pre>
+<p>If the user rejects cookies, access to the site is blocked. It may seem drastic, but it&#39;s a legitimate choice: the site transparently declares that it doesn&#39;t use tracking cookies, and the user can choose not to proceed.</p>
+<p>Consent is stored in <code>localStorage</code>, which is technically not a cookie but local browser storage. This choice avoids the paradox of the &quot;cookie to remember you don&#39;t want cookies.&quot;</p>
+<hr>
+<h2>The Build System</h2>
+<p>SimplePress offers several commands to manage the development cycle:</p>
+<pre><code class="language-bash">npm run setup     # Install dependencies and compile
+npm run build     # Compile TypeScript and generate the site
+npm run generate  # Generation only (TypeScript already compiled)
+npm run watch     # Automatically regenerate on changes
+npm run serve     # Local server for preview
+npm run clean     # Remove generated files
+</code></pre>
+<h3>Watch Mode</h3>
+<p>Watch mode is particularly useful while writing:</p>
+<pre><code class="language-typescript">watch(): void {
+  console.log(`Watching ${this.srcDir} for changes...`);
+  
+  fs.watch(this.srcDir, { recursive: true }, (eventType, filename) =&gt; {
+    if (filename &amp;&amp; (filename.endsWith(&#39;.md&#39;) || filename.includes(&#39;img/&#39;))) {
+      console.log(`File changed: ${filename}`);
+      console.log(&#39;Regenerating site...&#39;);
+      this.generate();
+    }
+  });
+}
+</code></pre>
+<p>Every change to a Markdown file or image triggers a complete site regeneration. For a blog with a few dozen posts, this operation is instantaneous.</p>
+<h3>Image Handling</h3>
+<p>SimplePress automatically copies images from <code>md-src/img/</code> to <code>build/img/</code>:</p>
+<pre><code class="language-typescript">private copyImages(): void {
+  const srcImgDir = path.join(this.srcDir, &#39;img&#39;);
+  const buildImgDir = path.join(this.buildDir, &#39;img&#39;);
+
+  if (!fs.existsSync(srcImgDir)) {
+    return;
+  }
+
+  if (!fs.existsSync(buildImgDir)) {
+    fs.mkdirSync(buildImgDir, { recursive: true });
+  }
+
+  const files = fs.readdirSync(srcImgDir);
+  for (const file of files) {
+    const srcFile = path.join(srcImgDir, file);
+    const buildFile = path.join(buildImgDir, file);
+    
+    if (fs.statSync(srcFile).isFile()) {
+      fs.copyFileSync(srcFile, buildFile);
+    }
+  }
+}
+</code></pre>
+<p>In Markdown, images can be referenced with relative paths: <code>![Description](img/my-image.png)</code>.</p>
+<hr>
+<h2>The Design System</h2>
+<p>SimplePress uses a carefully selected color palette, based on gray tones that ensure readability and a professional appearance:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Color</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pearl</td>
+<td>#F8F9FA</td>
+<td>Main background</td>
+</tr>
+<tr>
+<td>Light Silver</td>
+<td>#E9ECEF</td>
+<td>Header and footer</td>
+</tr>
+<tr>
+<td>Smoke Gray</td>
+<td>#CED4DA</td>
+<td>Borders</td>
+</tr>
+<tr>
+<td>Medium Gray</td>
+<td>#6C757D</td>
+<td>Secondary text</td>
+</tr>
+<tr>
+<td>Dark Gray</td>
+<td>#212529</td>
+<td>Main text</td>
+</tr>
+</tbody></table>
+<p>This neutral palette works well for textual content, where the focus should remain on the content itself rather than the interface.</p>
+<h3>Responsive Design</h3>
+<p>The styles include media queries to adapt to smaller screens:</p>
+<pre><code class="language-css">@media (max-width: 768px) {
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  .post-content {
+    padding: 1.5rem;
+  }
+}
+</code></pre>
+<p>The layout is mobile-first: it works well on smartphones and expands elegantly on larger screens.</p>
+<hr>
+<h2>Extensibility and Customization</h2>
+<p>SimplePress is designed to be easily customizable:</p>
+<p><strong>Configuration</strong>: by modifying <code>src/config.ts</code> you can change the title, description, author, color palette, and all translations.</p>
+<p><strong>Styles</strong>: the CSS in <code>template-engine.ts</code> can be modified to completely change the site&#39;s appearance.</p>
+<p><strong>Structure</strong>: by adding new page types in <code>types.ts</code> and related generation methods, you can extend the system.</p>
+<p><strong>Translations</strong>: by adding new keys in <code>translations</code>, support for other languages is immediate (although it would require changes to the <code>Language</code> type).</p>
 <hr>
 <h2>Conclusions</h2>
-<p>The modular monolith architecture is not a step backward from microservices, but a pragmatic recognition that architectural complexity has a cost. For many organizations, this cost exceeds the benefits.</p>
-<p>The patterns we&#39;ve explored (Transactional Outbox, Idempotency Key, asynchronous communication, cross-module reference strategies) are not exclusive to microservices. Applied to a modular monolith, they allow obtaining many of the architectural benefits of distributed systems while maintaining the operational simplicity of a monolithic application.</p>
-<p>True architectural maturity is not about following trends, but about understanding trade-offs and choosing the solution most suited to your context. And for many contexts, that context is a well-structured monolith.</p>
+<p>SimplePress represents a minimalist but complete approach to static site generation. It doesn&#39;t compete with Hugo or Jekyll for features, but offers something different: a readable and modifiable codebase that can be fully understood in an afternoon.</p>
+<p>For those managing a personal blog or a small site, this level of control is valuable. There are no mysterious dependencies, no magical behaviors to debug, no updates that risk breaking everything.</p>
+<p>The choice of TypeScript ensures type safety and autocompletion during development. The modular architecture allows modifying one component without impacting others. Native bilingual support avoids the complexity of external plugins. And out-of-the-box GDPR compliance eliminates a common concern for European sites.</p>
 <hr>
-<p><em>&quot;Make it work, make it right, make it fast&quot;</em> — Kent Beck</p>
-<p>In the case of software architecture, we might add: <em>&quot;...and keep it simple until you have a reason not to.&quot;</em></p>
+<p><em>Want to try SimplePress? The setup is simple:</em></p>
+<pre><code class="language-bash">git clone [repository]
+cd simplepress
+npm run setup
+# Add your content in md-src/
+npm run build
+npm run serve
+# Visit http://localhost:8000
+</code></pre>
+<p><em>Your static, bilingual, and GDPR-compliant blog is ready in minutes.</em></p>
       </article>
     
   </main>

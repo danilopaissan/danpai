@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping - Danilo Paissan</title>
+  <meta name="description" content="Trentino inside, ligurian outside">
+  <style>
+      :root {
+        --color-pearl: #F8F9FA;
+        --color-light-silver: #E9ECEF;
+        --color-smoke-gray: #CED4DA;
+        --color-medium-gray: #6C757D;
+        --color-dark-gray: #212529;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--color-dark-gray);
+        background-color: var(--color-pearl);
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      header {
+        background-color: var(--color-light-silver);
+        border-bottom: 1px solid var(--color-smoke-gray);
+        padding: 1rem 0;
+      }
+      
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+      }
+      
+      .nav-links a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .nav-links a:hover {
+        color: var(--color-dark-gray);
+      }
+      
+      main {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+      }
+      
+      .post-list {
+        display: grid;
+        gap: 2rem;
+      }
+      
+      .post-card {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: box-shadow 0.3s ease;
+      }
+      
+      .post-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      
+      .post-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .post-title a {
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .post-excerpt {
+        color: var(--color-medium-gray);
+        margin-bottom: 1rem;
+      }
+      
+      .read-more {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      
+      .post-content {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      
+      .post-content h1, .post-content h2, .post-content h3 {
+        margin-bottom: 1rem;
+        color: var(--color-dark-gray);
+      }
+      
+      .post-content p {
+        margin-bottom: 1rem;
+      }
+      
+      .post-content p a {
+        color: rgb(33, 37, 41);
+        text-decoration: none;
+      }
+      
+      .post-content code {
+        background-color: var(--color-light-silver);
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 4px;
+        padding: 0.2em 0.5em;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Monaco, monospace;
+        font-size: 0.9em;
+        color: #c7254e;
+      }
+
+      .post-content pre code {
+        display: block;
+        background-color: var(--color-dark-gray);
+        color: var(--color-pearl);
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        overflow-x: auto;
+        font-size: 0.875em;
+        line-height: 1.7;
+      }
+
+      .post-content pre {
+        margin-bottom: 1rem;
+      }
+      
+      .back-link {
+        display: inline-block;
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        margin-bottom: 2rem;
+      }
+      
+      footer {
+        background-color: var(--color-light-silver);
+        border-top: 1px solid var(--color-smoke-gray);
+        padding: 2rem 0;
+        text-align: center;
+        color: var(--color-medium-gray);
+      }
+      
+      .language-switcher {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      
+      .language-switcher a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .language-switcher a:hover {
+        background-color: var(--color-smoke-gray);
+      }
+      
+      .language-switcher a.active {
+        background-color: var(--color-smoke-gray);
+        color: var(--color-dark-gray);
+      }
+      
+      @media (max-width: 768px) {
+        .nav-links {
+          gap: 1rem;
+        }
+        
+        .container {
+          padding: 0 15px;
+        }
+        
+        .post-content {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index-en.html" class="logo">
+        Danilo Paissan
+      </a>
+      <div style="display: flex; align-items: center; gap: 2rem;">
+        <ul class="nav-links">
+          <li><a href="index-en.html">Home</a></li>
+          <li><a href="about.html">About Me</a></li>
+        </ul>
+        <div class="language-switcher">
+          <a href="javascript:switchLanguage('en')" class="active">EN</a>
+          <span>|</span>
+          <a href="javascript:switchLanguage('it')" class="">IT</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+  <main class="container">
+    
+      <a href="index-en.html" class="back-link">&larr; Back to home</a>
+      <article class="post-content">
+        <h1>MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</h1>
+        <p>When developing applications with Spring Boot, we often need to convert objects from one type to another. In particular, conversion between <strong>Entity</strong> (objects representing database tables) and <strong>DTO</strong> (Data Transfer Objects, objects used to communicate with the outside world) is an operation we repeat dozens, if not hundreds, of times in a project.</p>
+<p>Writing this mapping code by hand is tedious, repetitive, and error-prone. This is where <strong>MapStruct</strong> comes in, a library that automatically generates mapping code at compile time. In this tutorial, we&#39;ll see how to integrate it into our Spring Boot project, starting from the basics up to more advanced scenarios.</p>
+<hr>
+<h2>Why Separate Entity and DTO?</h2>
+<p>Before diving into MapStruct, let&#39;s take a step back and ask ourselves: why should we have separate objects for the database and for APIs?</p>
+<p>Let&#39;s imagine we have a <code>User</code> entity representing a user in our database:</p>
+<pre><code class="language-java">@Entity
+@Table(name = &quot;users&quot;)
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String passwordHash;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLogin;
+    private boolean enabled;
+    
+    @ManyToOne
+    private Role role;
+    
+    @OneToMany(mappedBy = &quot;user&quot;)
+    private List&lt;Order&gt; orders;
+    
+    // getters and setters...
+}
+</code></pre>
+<p>If we directly exposed this entity through our REST APIs, we would have several problems:</p>
+<ol>
+<li><strong>Security</strong>: we would expose the <code>passwordHash</code> field, which should remain absolutely private</li>
+<li><strong>Performance</strong>: we would always load the list of orders, even when not needed</li>
+<li><strong>Coupling</strong>: every change to the database structure would automatically reflect on the APIs, potentially breaking existing clients</li>
+<li><strong>Flexibility</strong>: we couldn&#39;t have different representations of the same data for different contexts</li>
+</ol>
+<p>DTOs solve all these problems. We can create a <code>UserDto</code> that exposes only what we want:</p>
+<pre><code class="language-java">public class UserDto {
+    private Long id;
+    private String fullName;  // firstName + lastName combined
+    private String email;
+    private String roleName;  // just the role name, not the entire object
+    
+    // getters and setters...
+}
+</code></pre>
+<p>But now we have a new problem: we need to write the code that converts from <code>User</code> to <code>UserDto</code> and vice versa. And this is where MapStruct becomes our best friend.</p>
+<hr>
+<h2>What is MapStruct and How Does It Work</h2>
+<p><strong>MapStruct</strong> is a code generator that creates type-safe mapper implementations at compile time. Unlike other libraries that use reflection at runtime (such as ModelMapper or Dozer), MapStruct generates pure Java code that is compiled along with the rest of the application.</p>
+<p>This approach offers several advantages:</p>
+<ul>
+<li><strong>Excellent performance</strong>: no reflection overhead at runtime</li>
+<li><strong>Compile-time errors</strong>: if mapping isn&#39;t possible, we find out immediately during compilation</li>
+<li><strong>Easy debugging</strong>: we can see and debug the generated code</li>
+<li><strong>Zero runtime dependencies</strong>: MapStruct is only needed during compilation</li>
+</ul>
+<hr>
+<h2>Project Configuration</h2>
+<h3>Adding Maven Dependencies</h3>
+<p>Let&#39;s start by configuring our Maven project. Open the <code>pom.xml</code> file and add the following dependencies and plugins:</p>
+<pre><code class="language-xml">&lt;properties&gt;
+    &lt;java.version&gt;17&lt;/java.version&gt;
+    &lt;mapstruct.version&gt;1.5.5.Final&lt;/mapstruct.version&gt;
+    &lt;lombok-mapstruct-binding.version&gt;0.2.0&lt;/lombok-mapstruct-binding.version&gt;
+&lt;/properties&gt;
+
+&lt;dependencies&gt;
+    &lt;!-- Spring Boot Starter --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- MapStruct --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.mapstruct&lt;/groupId&gt;
+        &lt;artifactId&gt;mapstruct&lt;/artifactId&gt;
+        &lt;version&gt;${mapstruct.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Lombok (optional, but very convenient) --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+        &lt;optional&gt;true&lt;/optional&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.11.0&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;annotationProcessorPaths&gt;
+                    &lt;!-- MapStruct processor --&gt;
+                    &lt;path&gt;
+                        &lt;groupId&gt;org.mapstruct&lt;/groupId&gt;
+                        &lt;artifactId&gt;mapstruct-processor&lt;/artifactId&gt;
+                        &lt;version&gt;${mapstruct.version}&lt;/version&gt;
+                    &lt;/path&gt;
+                    &lt;!-- Lombok processor --&gt;
+                    &lt;path&gt;
+                        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+                        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+                        &lt;version&gt;${lombok.version}&lt;/version&gt;
+                    &lt;/path&gt;
+                    &lt;!-- Binding to make Lombok work with MapStruct --&gt;
+                    &lt;path&gt;
+                        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+                        &lt;artifactId&gt;lombok-mapstruct-binding&lt;/artifactId&gt;
+                        &lt;version&gt;${lombok-mapstruct-binding.version}&lt;/version&gt;
+                    &lt;/path&gt;
+                &lt;/annotationProcessorPaths&gt;
+                &lt;compilerArgs&gt;
+                    &lt;arg&gt;-Amapstruct.defaultComponentModel=spring&lt;/arg&gt;
+                &lt;/compilerArgs&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+<p><strong>Important note</strong>: the order of annotation processors is crucial! Lombok must be processed before MapStruct, otherwise MapStruct won&#39;t see the getters and setters generated by Lombok.</p>
+<p>The argument <code>-Amapstruct.defaultComponentModel=spring</code> tells MapStruct to generate mappers as Spring beans, so we can inject them with <code>@Autowired</code>.</p>
+<h3>Gradle Configuration</h3>
+<p>If you prefer Gradle, here&#39;s the equivalent configuration for the <code>build.gradle</code> file:</p>
+<pre><code class="language-groovy">plugins {
+    id &#39;java&#39;
+    id &#39;org.springframework.boot&#39; version &#39;3.2.0&#39;
+    id &#39;io.spring.dependency-management&#39; version &#39;1.1.4&#39;
+}
+
+ext {
+    mapstructVersion = &#39;1.5.5.Final&#39;
+}
+
+dependencies {
+    implementation &#39;org.springframework.boot:spring-boot-starter-web&#39;
+    implementation &#39;org.springframework.boot:spring-boot-starter-data-jpa&#39;
+    
+    implementation &quot;org.mapstruct:mapstruct:${mapstructVersion}&quot;
+    
+    compileOnly &#39;org.projectlombok:lombok&#39;
+    
+    annotationProcessor &quot;org.mapstruct:mapstruct-processor:${mapstructVersion}&quot;
+    annotationProcessor &#39;org.projectlombok:lombok&#39;
+    annotationProcessor &#39;org.projectlombok:lombok-mapstruct-binding:0.2.0&#39;
+}
+
+compileJava {
+    options.compilerArgs += [&#39;-Amapstruct.defaultComponentModel=spring&#39;]
+}
+</code></pre>
+<hr>
+<h2>The First Mapper: From Entity to DTO</h2>
+<p>Now that we&#39;ve configured the project, let&#39;s create our first mapper. We&#39;ll start with a simple example: a <code>Product</code> entity and its DTO.</p>
+<h3>The Entity</h3>
+<pre><code class="language-java">@Entity
+@Table(name = &quot;products&quot;)
+@Data  // Lombok generates getters, setters, equals, hashCode, and toString
+@NoArgsConstructor
+@AllArgsConstructor
+public class Product {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    private String description;
+    
+    private BigDecimal price;
+    
+    private Integer stockQuantity;
+    
+    private LocalDateTime createdAt;
+    
+    private LocalDateTime updatedAt;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;category_id&quot;)
+    private Category category;
+}
+</code></pre>
+<h3>The DTO</h3>
+<pre><code class="language-java">@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductDto {
+    
+    private Long id;
+    
+    private String name;
+    
+    private String description;
+    
+    private BigDecimal price;
+    
+    private Integer stockQuantity;
+}
+</code></pre>
+<h3>The Mapper</h3>
+<p>And here&#39;s the mapper that converts between the two:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    ProductDto toDto(Product product);
+    
+    Product toEntity(ProductDto dto);
+    
+    List&lt;ProductDto&gt; toDtoList(List&lt;Product&gt; products);
+}
+</code></pre>
+<p>That&#39;s it! MapStruct will automatically generate the implementation during compilation. We don&#39;t have to write a single line of conversion code.</p>
+<p>After compilation (<code>mvn compile</code> or <code>gradle build</code>), MapStruct generates a <code>ProductMapperImpl</code> class that looks like this:</p>
+<pre><code class="language-java">@Component
+public class ProductMapperImpl implements ProductMapper {
+    
+    @Override
+    public ProductDto toDto(Product product) {
+        if (product == null) {
+            return null;
+        }
+        
+        ProductDto productDto = new ProductDto();
+        productDto.setId(product.getId());
+        productDto.setName(product.getName());
+        productDto.setDescription(product.getDescription());
+        productDto.setPrice(product.getPrice());
+        productDto.setStockQuantity(product.getStockQuantity());
+        
+        return productDto;
+    }
+    
+    @Override
+    public Product toEntity(ProductDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        
+        Product product = new Product();
+        product.setId(dto.getId());
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setPrice(dto.getPrice());
+        product.setStockQuantity(dto.getStockQuantity());
+        
+        return product;
+    }
+    
+    @Override
+    public List&lt;ProductDto&gt; toDtoList(List&lt;Product&gt; products) {
+        if (products == null) {
+            return null;
+        }
+        
+        List&lt;ProductDto&gt; list = new ArrayList&lt;&gt;(products.size());
+        for (Product product : products) {
+            list.add(toDto(product));
+        }
+        
+        return list;
+    }
+}
+</code></pre>
+<p>Notice the <code>@Component</code> annotation: thanks to the <code>defaultComponentModel=spring</code> configuration, the mapper is a Spring bean and we can inject it wherever we need it.</p>
+<hr>
+<h2>Using the Mapper in a Service</h2>
+<p>Let&#39;s see how to use the mapper inside a Spring service:</p>
+<pre><code class="language-java">@Service
+@RequiredArgsConstructor  // Lombok generates the constructor with final fields
+public class ProductService {
+    
+    private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
+    
+    public List&lt;ProductDto&gt; findAll() {
+        List&lt;Product&gt; products = productRepository.findAll();
+        return productMapper.toDtoList(products);
+    }
+    
+    public ProductDto findById(Long id) {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Product not found&quot;));
+        return productMapper.toDto(product);
+    }
+    
+    public ProductDto create(ProductDto dto) {
+        Product product = productMapper.toEntity(dto);
+        product.setCreatedAt(LocalDateTime.now());
+        Product saved = productRepository.save(product);
+        return productMapper.toDto(saved);
+    }
+    
+    public ProductDto update(Long id, ProductDto dto) {
+        Product existing = productRepository.findById(id)
+            .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Product not found&quot;));
+        
+        // Update only the fields we care about
+        existing.setName(dto.getName());
+        existing.setDescription(dto.getDescription());
+        existing.setPrice(dto.getPrice());
+        existing.setStockQuantity(dto.getStockQuantity());
+        existing.setUpdatedAt(LocalDateTime.now());
+        
+        Product saved = productRepository.save(existing);
+        return productMapper.toDto(saved);
+    }
+}
+</code></pre>
+<hr>
+<h2>Mapping Fields with Different Names</h2>
+<p>Entity and DTO fields don&#39;t always have the same name. MapStruct allows us to specify explicit mapping with the <code>@Mapping</code> annotation.</p>
+<p>Let&#39;s imagine we want to rename some fields in the DTO:</p>
+<pre><code class="language-java">@Data
+public class ProductDto {
+    private Long id;
+    private String productName;      // instead of &quot;name&quot;
+    private String productDescription;  // instead of &quot;description&quot;
+    private BigDecimal unitPrice;    // instead of &quot;price&quot;
+    private Integer quantity;        // instead of &quot;stockQuantity&quot;
+}
+</code></pre>
+<p>The mapper becomes:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    @Mapping(source = &quot;name&quot;, target = &quot;productName&quot;)
+    @Mapping(source = &quot;description&quot;, target = &quot;productDescription&quot;)
+    @Mapping(source = &quot;price&quot;, target = &quot;unitPrice&quot;)
+    @Mapping(source = &quot;stockQuantity&quot;, target = &quot;quantity&quot;)
+    ProductDto toDto(Product product);
+    
+    @Mapping(source = &quot;productName&quot;, target = &quot;name&quot;)
+    @Mapping(source = &quot;productDescription&quot;, target = &quot;description&quot;)
+    @Mapping(source = &quot;unitPrice&quot;, target = &quot;price&quot;)
+    @Mapping(source = &quot;quantity&quot;, target = &quot;stockQuantity&quot;)
+    Product toEntity(ProductDto dto);
+}
+</code></pre>
+<p>Or, more compactly with <code>@Mappings</code>:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    @Mappings({
+        @Mapping(source = &quot;name&quot;, target = &quot;productName&quot;),
+        @Mapping(source = &quot;description&quot;, target = &quot;productDescription&quot;),
+        @Mapping(source = &quot;price&quot;, target = &quot;unitPrice&quot;),
+        @Mapping(source = &quot;stockQuantity&quot;, target = &quot;quantity&quot;)
+    })
+    ProductDto toDto(Product product);
+}
+</code></pre>
+<hr>
+<h2>Mapping Nested Objects</h2>
+<p>One of the most common cases is mapping relationships. Let&#39;s go back to our <code>Product</code> which has a relationship with <code>Category</code>:</p>
+<pre><code class="language-java">@Entity
+@Data
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    private String description;
+    
+    @OneToMany(mappedBy = &quot;category&quot;)
+    private List&lt;Product&gt; products;
+}
+</code></pre>
+<p>We want our <code>ProductDto</code> to include the category name:</p>
+<pre><code class="language-java">@Data
+public class ProductDto {
+    private Long id;
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private String categoryName;  // Just the category name
+}
+</code></pre>
+<p>MapStruct can automatically navigate nested properties using dot notation:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    @Mapping(source = &quot;category.name&quot;, target = &quot;categoryName&quot;)
+    ProductDto toDto(Product product);
+}
+</code></pre>
+<p>If instead we want to include a nested DTO object, we create a <code>CategoryDto</code>:</p>
+<pre><code class="language-java">@Data
+public class CategoryDto {
+    private Long id;
+    private String name;
+}
+
+@Data
+public class ProductDto {
+    private Long id;
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private CategoryDto category;  // Nested DTO
+}
+</code></pre>
+<p>And we modify the mapper to use another mapper:</p>
+<pre><code class="language-java">@Mapper(uses = CategoryMapper.class)
+public interface ProductMapper {
+    ProductDto toDto(Product product);
+}
+
+@Mapper
+public interface CategoryMapper {
+    CategoryDto toDto(Category category);
+    Category toEntity(CategoryDto dto);
+}
+</code></pre>
+<p>MapStruct will automatically use <code>CategoryMapper</code> to convert the category when converting the product.</p>
+<hr>
+<h2>Ignoring Specific Fields</h2>
+<p>Sometimes we don&#39;t want to map certain fields. We can tell MapStruct to ignore them:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    @Mapping(target = &quot;createdAt&quot;, ignore = true)
+    @Mapping(target = &quot;updatedAt&quot;, ignore = true)
+    @Mapping(target = &quot;category&quot;, ignore = true)
+    Product toEntity(ProductDto dto);
+}
+</code></pre>
+<p>This is useful when certain fields need to be handled manually (like timestamps) or when we don&#39;t want to overwrite existing relationships.</p>
+<hr>
+<h2>Mapping with Default Values and Constants</h2>
+<p>MapStruct allows specifying default values or constants:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    // If stockQuantity is null, use 0
+    @Mapping(target = &quot;stockQuantity&quot;, defaultValue = &quot;0&quot;)
+    ProductDto toDto(Product product);
+    
+    // Always set &quot;ACTIVE&quot; as status
+    @Mapping(target = &quot;status&quot;, constant = &quot;ACTIVE&quot;)
+    Product toEntity(ProductDto dto);
+}
+</code></pre>
+<hr>
+<h2>Mapping with Java Expressions</h2>
+<p>For more complex mapping logic, we can use Java expressions:</p>
+<pre><code class="language-java">@Mapper(imports = {LocalDateTime.class, UUID.class})
+public interface ProductMapper {
+    
+    @Mapping(target = &quot;createdAt&quot;, expression = &quot;java(LocalDateTime.now())&quot;)
+    @Mapping(target = &quot;sku&quot;, expression = &quot;java(UUID.randomUUID().toString())&quot;)
+    Product toEntity(ProductDto dto);
+}
+</code></pre>
+<p>Notice the <code>imports</code> attribute in the <code>@Mapper</code> annotation: it&#39;s needed to import the classes used in the expressions.</p>
+<hr>
+<h2>Custom Mapping Methods with @AfterMapping and @BeforeMapping</h2>
+<p>For even more complex logic, MapStruct offers <code>@BeforeMapping</code> and <code>@AfterMapping</code> methods:</p>
+<pre><code class="language-java">@Mapper
+public abstract class ProductMapper {
+    
+    public abstract ProductDto toDto(Product product);
+    
+    public abstract Product toEntity(ProductDto dto);
+    
+    @AfterMapping
+    protected void enrichDto(Product product, @MappingTarget ProductDto dto) {
+        // Custom logic after mapping
+        if (product.getPrice() != null &amp;&amp; product.getStockQuantity() != null) {
+            dto.setTotalValue(product.getPrice()
+                .multiply(BigDecimal.valueOf(product.getStockQuantity())));
+        }
+    }
+    
+    @BeforeMapping
+    protected void validateProduct(ProductDto dto) {
+        // Validation before mapping
+        if (dto.getPrice() != null &amp;&amp; dto.getPrice().compareTo(BigDecimal.ZERO) &lt; 0) {
+            throw new IllegalArgumentException(&quot;Price cannot be negative&quot;);
+        }
+    }
+}
+</code></pre>
+<p>Note that to use <code>@BeforeMapping</code> and <code>@AfterMapping</code>, the mapper must be an <strong>abstract class</strong> instead of an interface.</p>
+<hr>
+<h2>Updating Existing Entities</h2>
+<p>A common pattern is updating an existing entity with DTO data, without creating a new one. MapStruct supports this scenario with <code>@MappingTarget</code>:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    ProductDto toDto(Product product);
+    
+    @Mapping(target = &quot;id&quot;, ignore = true)
+    @Mapping(target = &quot;createdAt&quot;, ignore = true)
+    void updateEntityFromDto(ProductDto dto, @MappingTarget Product product);
+}
+</code></pre>
+<p>And in the service:</p>
+<pre><code class="language-java">@Service
+@RequiredArgsConstructor
+public class ProductService {
+    
+    private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
+    
+    public ProductDto update(Long id, ProductDto dto) {
+        Product existing = productRepository.findById(id)
+            .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Product not found&quot;));
+        
+        // Update the existing entity with DTO data
+        productMapper.updateEntityFromDto(dto, existing);
+        existing.setUpdatedAt(LocalDateTime.now());
+        
+        Product saved = productRepository.save(existing);
+        return productMapper.toDto(saved);
+    }
+}
+</code></pre>
+<hr>
+<h2>Mapping Collections and Maps</h2>
+<p>MapStruct handles collections automatically:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    ProductDto toDto(Product product);
+    
+    Product toEntity(ProductDto dto);
+    
+    List&lt;ProductDto&gt; toDtoList(List&lt;Product&gt; products);
+    
+    Set&lt;ProductDto&gt; toDtoSet(Set&lt;Product&gt; products);
+    
+    Map&lt;Long, ProductDto&gt; toDtoMap(Map&lt;Long, Product&gt; products);
+}
+</code></pre>
+<p>MapStruct automatically iterates over the collection and applies the appropriate mapping method to each element.</p>
+<hr>
+<h2>Handling Nulls</h2>
+<p>MapStruct handles nulls intelligently. By default:</p>
+<ul>
+<li>If the source object is null, the result is null</li>
+<li>If a source property is null, the target property remains at its default value</li>
+</ul>
+<p>We can customize this behavior:</p>
+<pre><code class="language-java">@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface ProductMapper {
+    
+    // If a DTO property is null, it doesn&#39;t overwrite the entity&#39;s property
+    void updateEntityFromDto(ProductDto dto, @MappingTarget Product product);
+}
+</code></pre>
+<p>Or at the individual property level:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    @Mapping(target = &quot;description&quot;, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+    ProductDto toDto(Product product);
+}
+</code></pre>
+<hr>
+<h2>Automatic Type Conversions</h2>
+<p>MapStruct automatically converts between compatible types:</p>
+<ul>
+<li><code>int</code> ↔ <code>Integer</code>, <code>long</code> ↔ <code>Long</code>, etc.</li>
+<li><code>String</code> ↔ primitive types and wrappers</li>
+<li><code>Date</code> ↔ <code>LocalDateTime</code>, <code>LocalDate</code>, etc.</li>
+<li><code>enum</code> ↔ <code>String</code></li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-java">@Entity
+public class Product {
+    private LocalDateTime createdAt;
+    private ProductStatus status;  // enum
+}
+
+@Data
+public class ProductDto {
+    private String createdAt;  // MapStruct converts automatically
+    private String status;     // MapStruct converts automatically
+}
+</code></pre>
+<p>To format dates, we use the <code>dateFormat</code> attribute:</p>
+<pre><code class="language-java">@Mapper
+public interface ProductMapper {
+    
+    @Mapping(target = &quot;createdAt&quot;, dateFormat = &quot;dd/MM/yyyy HH:mm:ss&quot;)
+    ProductDto toDto(Product product);
+}
+</code></pre>
+<hr>
+<h2>Enum Mapping</h2>
+<p>For mapping between different enums or between enums and strings:</p>
+<pre><code class="language-java">public enum ProductStatus {
+    ACTIVE, INACTIVE, DISCONTINUED
+}
+
+public enum ProductStatusDto {
+    AVAILABLE, UNAVAILABLE, REMOVED
+}
+
+@Mapper
+public interface ProductMapper {
+    
+    @ValueMapping(source = &quot;ACTIVE&quot;, target = &quot;AVAILABLE&quot;)
+    @ValueMapping(source = &quot;INACTIVE&quot;, target = &quot;UNAVAILABLE&quot;)
+    @ValueMapping(source = &quot;DISCONTINUED&quot;, target = &quot;REMOVED&quot;)
+    ProductStatusDto toStatusDto(ProductStatus status);
+    
+    // For unmapped values, use a default
+    @ValueMapping(source = MappingConstants.ANY_REMAINING, target = &quot;UNAVAILABLE&quot;)
+    ProductStatusDto toStatusDtoWithDefault(ProductStatus status);
+}
+</code></pre>
+<hr>
+<h2>Mapper Composition</h2>
+<p>In large projects, it&#39;s useful to compose smaller, reusable mappers:</p>
+<pre><code class="language-java">// Base mapper for audit fields
+@Mapper
+public interface AuditMapper {
+    
+    @Mapping(target = &quot;createdAt&quot;, source = &quot;createdAt&quot;)
+    @Mapping(target = &quot;updatedAt&quot;, source = &quot;updatedAt&quot;)
+    @Mapping(target = &quot;createdBy&quot;, source = &quot;createdBy&quot;)
+    void mapAuditFields(Auditable source, @MappingTarget AuditableDto target);
+}
+
+// Product mapper that uses AuditMapper
+@Mapper(uses = {CategoryMapper.class, AuditMapper.class})
+public interface ProductMapper {
+    ProductDto toDto(Product product);
+}
+</code></pre>
+<hr>
+<h2>Shared Configuration with @MapperConfig</h2>
+<p>To avoid repeating the same configuration on every mapper, we use <code>@MapperConfig</code>:</p>
+<pre><code class="language-java">@MapperConfig(
+    componentModel = &quot;spring&quot;,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
+)
+public interface MapperConfiguration {
+}
+
+// Now every mapper can inherit this configuration
+@Mapper(config = MapperConfiguration.class)
+public interface ProductMapper {
+    ProductDto toDto(Product product);
+}
+
+@Mapper(config = MapperConfiguration.class)
+public interface CategoryMapper {
+    CategoryDto toDto(Category category);
+}
+</code></pre>
+<hr>
+<h2>Injecting Spring Services into Mappers</h2>
+<p>Sometimes we need to call Spring services during mapping. We can do this using abstract classes:</p>
+<pre><code class="language-java">@Mapper(componentModel = &quot;spring&quot;)
+public abstract class ProductMapper {
+    
+    @Autowired
+    protected PriceCalculationService priceService;
+    
+    @Autowired
+    protected CategoryRepository categoryRepository;
+    
+    @Mapping(target = &quot;finalPrice&quot;, expression = &quot;java(calculateFinalPrice(product))&quot;)
+    @Mapping(target = &quot;category&quot;, source = &quot;categoryId&quot;)
+    public abstract ProductDto toDto(Product product);
+    
+    protected BigDecimal calculateFinalPrice(Product product) {
+        return priceService.calculateWithDiscount(product.getPrice(), product.getId());
+    }
+    
+    protected Category mapCategory(Long categoryId) {
+        if (categoryId == null) {
+            return null;
+        }
+        return categoryRepository.findById(categoryId).orElse(null);
+    }
+}
+</code></pre>
+<hr>
+<h2>Testing Mappers</h2>
+<p>Testing mappers is simple because they are standard Spring beans:</p>
+<pre><code class="language-java">@SpringBootTest
+class ProductMapperTest {
+    
+    @Autowired
+    private ProductMapper productMapper;
+    
+    @Test
+    void shouldMapProductToDto() {
+        // Given
+        Product product = new Product();
+        product.setId(1L);
+        product.setName(&quot;Test Product&quot;);
+        product.setPrice(new BigDecimal(&quot;99.99&quot;));
+        product.setStockQuantity(10);
+        
+        // When
+        ProductDto dto = productMapper.toDto(product);
+        
+        // Then
+        assertThat(dto.getId()).isEqualTo(1L);
+        assertThat(dto.getName()).isEqualTo(&quot;Test Product&quot;);
+        assertThat(dto.getPrice()).isEqualByComparingTo(&quot;99.99&quot;);
+        assertThat(dto.getStockQuantity()).isEqualTo(10);
+    }
+    
+    @Test
+    void shouldMapDtoToProduct() {
+        // Given
+        ProductDto dto = new ProductDto();
+        dto.setName(&quot;New Product&quot;);
+        dto.setPrice(new BigDecimal(&quot;149.99&quot;));
+        
+        // When
+        Product product = productMapper.toEntity(dto);
+        
+        // Then
+        assertThat(product.getName()).isEqualTo(&quot;New Product&quot;);
+        assertThat(product.getPrice()).isEqualByComparingTo(&quot;149.99&quot;);
+    }
+    
+    @Test
+    void shouldUpdateExistingProduct() {
+        // Given
+        Product existing = new Product();
+        existing.setId(1L);
+        existing.setName(&quot;Old Name&quot;);
+        existing.setCreatedAt(LocalDateTime.now().minusDays(30));
+        
+        ProductDto dto = new ProductDto();
+        dto.setName(&quot;New Name&quot;);
+        dto.setPrice(new BigDecimal(&quot;199.99&quot;));
+        
+        // When
+        productMapper.updateEntityFromDto(dto, existing);
+        
+        // Then
+        assertThat(existing.getId()).isEqualTo(1L); // not modified
+        assertThat(existing.getName()).isEqualTo(&quot;New Name&quot;); // updated
+        assertThat(existing.getCreatedAt()).isNotNull(); // not modified
+    }
+}
+</code></pre>
+<hr>
+<h2>Best Practices</h2>
+<p>Let&#39;s conclude with some best practices for using MapStruct:</p>
+<h3>1. One Mapper per Bounded Context</h3>
+<p>Don&#39;t create a single giant mapper. Create separate mappers for each functional area of your application.</p>
+<h3>2. Use Case-Specific DTOs</h3>
+<p>Don&#39;t be afraid to create different DTOs for different operations. A <code>ProductSummaryDto</code> for lists, a <code>ProductDetailDto</code> for details, a <code>ProductCreateDto</code> for creation.</p>
+<h3>3. Validate DTOs, Not Entities</h3>
+<p>Input data validation should happen on DTOs, using Bean Validation annotations (<code>@NotNull</code>, <code>@Size</code>, etc.).</p>
+<h3>4. Don&#39;t Map Bidirectional Relationships</h3>
+<p>If you have bidirectional relationships (e.g., <code>Product</code> ↔ <code>Category</code>), map only one direction to avoid infinite recursion.</p>
+<h3>5. Use @MappingTarget for Updates</h3>
+<p>Instead of creating new entities from DTOs, update existing ones. This preserves fields like ID and creation timestamps.</p>
+<h3>6. Check the Generated Code</h3>
+<p>Occasionally take a look at the generated code in the <code>target/generated-sources</code> folder. It will help you understand what MapStruct does and diagnose problems.</p>
+<h3>7. Explicitly Handle Unmapped Fields</h3>
+<p>Use <code>@Mapping(target = &quot;field&quot;, ignore = true)</code> instead of leaving compilation warnings. This documents your intentions.</p>
+<hr>
+<h2>Conclusions</h2>
+<p>MapStruct is a powerful tool that eliminates mapping boilerplate code while maintaining excellent performance and type-safety. Integration with Spring Boot is seamless thanks to the <code>spring</code> component model, and the ability to see the generated code makes debugging simple.</p>
+<p>Start with simple mappings and progressively explore advanced features as you need them. The learning curve is gentle, and once mastered, MapStruct will become an indispensable tool in your development toolkit.</p>
+<p>Useful resources:</p>
+<ul>
+<li><a href="https://mapstruct.org/documentation/stable/reference/html/">Official MapStruct Documentation</a></li>
+<li><a href="https://github.com/mapstruct/mapstruct">MapStruct GitHub</a></li>
+<li><a href="https://github.com/mapstruct/mapstruct-examples">MapStruct Examples</a></li>
+</ul>
+      </article>
+    
+  </main>
+  
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Danilo Paissan. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  
+      <div id="cookie-banner" class="cookie-banner" style="display: none;">
+        <div class="cookie-content">
+          <h3>Cookie Notice</h3>
+          <p>This site does not use tracking or profiling cookies. Technical cookies are only used for site functionality.</p>
+          <div class="cookie-buttons">
+            <button onclick="acceptCookies()" class="btn-accept">Accept</button>
+            <button onclick="rejectCookies()" class="btn-reject">Reject</button>
+          </div>
+        </div>
+      </div>
+      
+      <style>
+        .cookie-banner {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: var(--color-dark-gray);
+          color: white;
+          z-index: 1000;
+          padding: 1rem;
+        }
+        
+        .cookie-content {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        
+        .cookie-content h3 {
+          margin-bottom: 0.5rem;
+        }
+        
+        .cookie-content p {
+          margin-bottom: 1rem;
+        }
+        
+        .cookie-buttons {
+          display: flex;
+          gap: 1rem;
+        }
+        
+        .cookie-buttons button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+        }
+        
+        .btn-accept {
+          background: var(--color-light-silver);
+          color: var(--color-dark-gray);
+        }
+        
+        .btn-reject {
+          background: var(--color-medium-gray);
+          color: white;
+        }
+        
+        .cookie-rejected {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          text-align: center;
+        }
+      </style>
+      
+      <script>
+        function checkCookieConsent() {
+          const consent = localStorage.getItem('cookieConsent');
+          if (consent === 'rejected') {
+            document.body.innerHTML = `
+              <div class="cookie-rejected">
+                <h2>You need to accept cookies to access the site.</h2>
+                <button onclick="resetCookieConsent()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-medium-gray); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Accept
+                </button>
+              </div>
+            `;
+            return;
+          }
+          if (!consent) {
+            document.getElementById('cookie-banner').style.display = 'block';
+          }
+        }
+        
+        function acceptCookies() {
+          localStorage.setItem('cookieConsent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+        }
+        
+        function rejectCookies() {
+          localStorage.setItem('cookieConsent', 'rejected');
+          location.reload();
+        }
+        
+        function resetCookieConsent() {
+          localStorage.removeItem('cookieConsent');
+          location.reload();
+        }
+        
+        // Check consent on page load
+        document.addEventListener('DOMContentLoaded', checkCookieConsent);
+      </script>
+    
+  
+  <script>
+    function switchLanguage(lang) {
+      const currentPath = window.location.pathname;
+      const filename = currentPath.split('/').pop() || 'index.html';
+      
+      let newFilename;
+      if (lang === 'en') {
+        if (filename === 'index.html') {
+          newFilename = 'index-en.html';
+        } else if (filename === 'chi-sono.html') {
+          newFilename = 'about.html';
+        } else if (!filename.includes('-en.html')) {
+          newFilename = filename.replace('.html', '-en.html');
+        } else {
+          newFilename = filename;
+        }
+      } else {
+        if (filename === 'index-en.html') {
+          newFilename = 'index.html';
+        } else if (filename === 'about.html') {
+          newFilename = 'chi-sono.html';
+        } else if (filename.includes('-en.html')) {
+          newFilename = filename.replace('-en.html', '.html');
+        } else {
+          newFilename = filename;
+        }
+      }
+      
+      window.location.href = newFilename;
+    }
+  </script>
+</body>
+</html>

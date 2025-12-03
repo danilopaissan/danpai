@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modular Monolith Architecture: The Return to the Monolith (Done Right) - Danilo Paissan</title>
+  <meta name="description" content="Trentino inside, ligurian outside">
+  <style>
+      :root {
+        --color-pearl: #F8F9FA;
+        --color-light-silver: #E9ECEF;
+        --color-smoke-gray: #CED4DA;
+        --color-medium-gray: #6C757D;
+        --color-dark-gray: #212529;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--color-dark-gray);
+        background-color: var(--color-pearl);
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      header {
+        background-color: var(--color-light-silver);
+        border-bottom: 1px solid var(--color-smoke-gray);
+        padding: 1rem 0;
+      }
+      
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+      }
+      
+      .nav-links a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .nav-links a:hover {
+        color: var(--color-dark-gray);
+      }
+      
+      main {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+      }
+      
+      .post-list {
+        display: grid;
+        gap: 2rem;
+      }
+      
+      .post-card {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: box-shadow 0.3s ease;
+      }
+      
+      .post-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      
+      .post-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .post-title a {
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .post-excerpt {
+        color: var(--color-medium-gray);
+        margin-bottom: 1rem;
+      }
+      
+      .read-more {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      
+      .post-content {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      
+      .post-content h1, .post-content h2, .post-content h3 {
+        margin-bottom: 1rem;
+        color: var(--color-dark-gray);
+      }
+      
+      .post-content p {
+        margin-bottom: 1rem;
+      }
+      
+      .post-content p a {
+        color: rgb(33, 37, 41);
+        text-decoration: none;
+      }
+      
+      .post-content code {
+        background-color: var(--color-light-silver);
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 4px;
+        padding: 0.2em 0.5em;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Monaco, monospace;
+        font-size: 0.9em;
+        color: #c7254e;
+      }
+
+      .post-content pre code {
+        display: block;
+        background-color: var(--color-dark-gray);
+        color: var(--color-pearl);
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        overflow-x: auto;
+        font-size: 0.875em;
+        line-height: 1.7;
+      }
+
+      .post-content pre {
+        margin-bottom: 1rem;
+      }
+      
+      .back-link {
+        display: inline-block;
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        margin-bottom: 2rem;
+      }
+      
+      footer {
+        background-color: var(--color-light-silver);
+        border-top: 1px solid var(--color-smoke-gray);
+        padding: 2rem 0;
+        text-align: center;
+        color: var(--color-medium-gray);
+      }
+      
+      .language-switcher {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      
+      .language-switcher a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .language-switcher a:hover {
+        background-color: var(--color-smoke-gray);
+      }
+      
+      .language-switcher a.active {
+        background-color: var(--color-smoke-gray);
+        color: var(--color-dark-gray);
+      }
+      
+      @media (max-width: 768px) {
+        .nav-links {
+          gap: 1rem;
+        }
+        
+        .container {
+          padding: 0 15px;
+        }
+        
+        .post-content {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index-en.html" class="logo">
+        Danilo Paissan
+      </a>
+      <div style="display: flex; align-items: center; gap: 2rem;">
+        <ul class="nav-links">
+          <li><a href="index-en.html">Home</a></li>
+          <li><a href="about.html">About Me</a></li>
+        </ul>
+        <div class="language-switcher">
+          <a href="javascript:switchLanguage('en')" class="active">EN</a>
+          <span>|</span>
+          <a href="javascript:switchLanguage('it')" class="">IT</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+  <main class="container">
+    
+      <a href="index-en.html" class="back-link">&larr; Back to home</a>
+      <article class="post-content">
+        <h1>Modular Monolith Architecture: The Return to the Monolith (Done Right)</h1>
+        <p>In the software development landscape, application architectures have gone through different eras, each with its own promises and trade-offs. Today we&#39;re witnessing an interesting phenomenon: after years of rushing toward microservices, many organizations are rediscovering the value of a simpler yet structured architecture. Welcome to the era of the <strong>Modular Monolith</strong>.</p>
+<hr>
+<h2>A Journey Through the History of Architectures</h2>
+<h3>The Era of the Traditional Monolith</h3>
+<p>In the early days of enterprise development, the monolith was the only practical option. One application, one deployment, one database. Simplicity was its strength: all the code resided in a single project, debugging was straightforward, and ACID transactions guaranteed data consistency without particular effort.</p>
+<p>But the traditional monolith brought significant problems with it. As the application grew, the code became an intricate tangle of dependencies. The famous <em>Big Ball of Mud</em> wasn&#39;t an exception, but the norm. Modifying one feature meant risking breaking ten others. Deployment required releasing the entire application, even for a single fix. And scaling meant replicating everything, even components that didn&#39;t need it.</p>
+<p><strong>Pros of the traditional monolith:</strong></p>
+<ul>
+<li>Simplicity of initial development and environment setup</li>
+<li>Native ACID transactions and immediate consistency</li>
+<li>Straightforward debugging and tracing</li>
+<li>No network overhead for internal calls</li>
+<li>Simple deployment (a single artifact)</li>
+</ul>
+<p><strong>Cons of the traditional monolith:</strong></p>
+<ul>
+<li>Tight coupling between components</li>
+<li>Only vertical scaling or complete replication</li>
+<li>Risky deployment and long release times</li>
+<li>Difficulty in having multiple teams work in parallel</li>
+<li>Technologies locked into choices made years ago</li>
+</ul>
+<h3>The Advent of SOA</h3>
+<p>Around the turn of the millennium, <strong>Service-Oriented Architecture</strong> promised to solve the monolith&#39;s problems through division into reusable services. The idea was elegant: independent components communicating through standard protocols, orchestrated by an Enterprise Service Bus (ESB).</p>
+<p>SOA introduced important concepts like service contracts, reusability, and interoperability. But in practice, many SOA implementations turned out to be disguised distributed monoliths. The ESB often became a single point of failure and a bottleneck. Complexity had simply shifted, not been eliminated.</p>
+<p><strong>Pros of SOA:</strong></p>
+<ul>
+<li>Service reusability across different applications</li>
+<li>Well-defined communication standards (SOAP, WS-*)</li>
+<li>Centralized governance</li>
+<li>Integration between heterogeneous systems</li>
+</ul>
+<p><strong>Cons of SOA:</strong></p>
+<ul>
+<li>ESB as a single point of failure</li>
+<li>Significant overhead from SOAP/XML protocols</li>
+<li>Configuration and maintenance complexity</li>
+<li>Often resulted in &quot;distributed monolith&quot;</li>
+<li>High licensing costs for enterprise stacks</li>
+</ul>
+<h3>The Microservices Revolution</h3>
+<p>Around 2014, Netflix, Amazon, and other tech companies began evangelizing <strong>microservices</strong>. Small, independent services, each with its own database, independently deployable. It was the promise of true agility: autonomous teams, heterogeneous technologies, granular scalability.</p>
+<p>Microservices worked brilliantly for organizations with hundreds of developers and extreme scale requirements. But for most companies, they introduced disproportionate operational complexity. Managing tens or hundreds of services requires sophisticated infrastructure: service discovery, circuit breakers, distributed tracing, container orchestration. Data consistency, previously guaranteed by ACID transactions, becomes an architectural problem to solve with patterns like Saga or eventual consistency.</p>
+<p><strong>Pros of microservices:</strong></p>
+<ul>
+<li>Independent deployment for each service</li>
+<li>Granular and optimized scalability</li>
+<li>Autonomous teams with clear ownership</li>
+<li>Technology freedom for each service</li>
+<li>Natural fault isolation</li>
+</ul>
+<p><strong>Cons of microservices:</strong></p>
+<ul>
+<li>High operational complexity (orchestration, monitoring, networking)</li>
+<li>Network latency for every call between services</li>
+<li>Difficult to guarantee data consistency</li>
+<li>Complex distributed debugging</li>
+<li>Significant infrastructure overhead</li>
+<li>Requires high DevOps maturity</li>
+</ul>
+<h3>The Present: Modular Monolith</h3>
+<p>The <strong>Modular Monolith</strong> represents a pragmatic synthesis. It maintains the advantages of the monolith (operational simplicity, ACID transactions, absence of network latency) while incorporating the architectural principles that made microservices effective: clear boundaries, low coupling, high cohesion.</p>
+<p>The fundamental idea is to structure the application in <strong>modules</strong> with well-defined boundaries, each responsible for a specific bounded context. Modules communicate through explicit interfaces, not through direct dependencies on other modules&#39; internal code.</p>
+<p><strong>Pros of the modular monolith:</strong></p>
+<ul>
+<li>Operational simplicity of the monolith</li>
+<li>ACID transactions when needed</li>
+<li>Clear and enforced architectural boundaries</li>
+<li>Natural preparation for a potential migration to microservices</li>
+<li>Contained infrastructure costs</li>
+<li>Simpler developer onboarding</li>
+</ul>
+<p><strong>Cons of the modular monolith:</strong></p>
+<ul>
+<li>Requires discipline to maintain module boundaries</li>
+<li>Scalability still limited compared to microservices</li>
+<li>Full application deployment for every change</li>
+<li>Technology stack shared across all modules</li>
+</ul>
+<h4>Typical Project Structure</h4>
+<p>How does modular architecture translate concretely into a project structure? Here&#39;s a representative schema:</p>
+<pre><code>📁 src/
+│
+├── 📁 Modules/
+│   │
+│   ├── 📁 Orders/                          # ORDERS MODULE
+│   │   ├── 📁 Application/                 # Use cases and application logic
+│   │   │   ├── 📁 Commands/
+│   │   │   │   ├── CreateOrder/
+│   │   │   │   │   ├── CreateOrderCommand.cs
+│   │   │   │   │   └── CreateOrderHandler.cs
+│   │   │   │   └── CompleteOrder/
+│   │   │   │       ├── CompleteOrderCommand.cs
+│   │   │   │       └── CompleteOrderHandler.cs
+│   │   │   ├── 📁 Queries/
+│   │   │   │   └── GetOrderById/
+│   │   │   │       ├── GetOrderByIdQuery.cs
+│   │   │   │       └── GetOrderByIdHandler.cs
+│   │   │   └── 📁 EventHandlers/           # Handlers for events from OTHER modules
+│   │   │       └── CustomerUpdatedHandler.cs
+│   │   │
+│   │   ├── 📁 Domain/                      # Entities and domain logic
+│   │   │   ├── 📁 Entities/
+│   │   │   │   ├── Order.cs
+│   │   │   │   └── OrderLine.cs
+│   │   │   ├── 📁 ValueObjects/
+│   │   │   │   └── Money.cs
+│   │   │   ├── 📁 Events/                  # Domain events PUBLISHED by this module
+│   │   │   │   ├── OrderCreatedEvent.cs
+│   │   │   │   └── OrderCompletedEvent.cs
+│   │   │   └── 📁 Exceptions/
+│   │   │       └── OrderNotFoundException.cs
+│   │   │
+│   │   ├── 📁 Infrastructure/              # Persistence and external services
+│   │   │   ├── 📁 Persistence/
+│   │   │   │   ├── OrdersDbContext.cs
+│   │   │   │   ├── 📁 Configurations/      # EF Core mapping
+│   │   │   │   │   └── OrderConfiguration.cs
+│   │   │   │   ├── 📁 Repositories/
+│   │   │   │   │   └── OrderRepository.cs
+│   │   │   │   └── 📁 Migrations/
+│   │   │   │       └── 20240115_InitialCreate.cs
+│   │   │   └── 📁 Outbox/                  # Transactional Outbox
+│   │   │       └── OrdersOutboxProcessor.cs
+│   │   │
+│   │   ├── 📁 Contracts/                   # MODULE&#39;S PUBLIC INTERFACE
+│   │   │   ├── 📁 IntegrationEvents/       # Events for other modules
+│   │   │   │   ├── OrderCompletedIntegrationEvent.cs
+│   │   │   │   └── OrderCancelledIntegrationEvent.cs
+│   │   │   └── 📁 Services/                # Public API (interfaces)
+│   │   │       └── IOrderService.cs
+│   │   │
+│   │   └── OrdersModule.cs                 # Module DI registration
+│   │
+│   ├── 📁 Customers/                       # CUSTOMERS MODULE
+│   │   ├── 📁 Application/
+│   │   ├── 📁 Domain/
+│   │   ├── 📁 Infrastructure/
+│   │   ├── 📁 Contracts/
+│   │   │   ├── 📁 IntegrationEvents/
+│   │   │   │   └── CustomerUpdatedIntegrationEvent.cs
+│   │   │   └── 📁 Services/
+│   │   │       └── ICustomerService.cs     # Used by Orders to get customer data
+│   │   └── CustomersModule.cs
+│   │
+│   ├── 📁 Inventory/                       # INVENTORY MODULE
+│   │   ├── 📁 Application/
+│   │   │   └── 📁 EventHandlers/
+│   │   │       └── OrderCompletedHandler.cs  # Reacts to Orders events
+│   │   ├── 📁 Domain/
+│   │   ├── 📁 Infrastructure/
+│   │   │   └── 📁 Idempotency/             # Idempotency management
+│   │   │       └── ProcessedEventsRepository.cs
+│   │   ├── 📁 Contracts/
+│   │   └── InventoryModule.cs
+│   │
+│   └── 📁 Notifications/                   # NOTIFICATIONS MODULE
+│       ├── 📁 Application/
+│       ├── 📁 Domain/
+│       ├── 📁 Infrastructure/
+│       ├── 📁 Contracts/
+│       └── NotificationsModule.cs
+│
+├── 📁 Shared/                              # SHARED CODE (KERNEL)
+│   ├── 📁 Domain/
+│   │   ├── Entity.cs                       # Base class for entities
+│   │   ├── AggregateRoot.cs
+│   │   ├── IDomainEvent.cs
+│   │   └── IIntegrationEvent.cs
+│   ├── 📁 Infrastructure/
+│   │   ├── 📁 EventBus/
+│   │   │   ├── IEventBus.cs
+│   │   │   └── InMemoryEventBus.cs
+│   │   ├── 📁 Outbox/
+│   │   │   ├── OutboxMessage.cs
+│   │   │   └── IOutboxProcessor.cs
+│   │   └── 📁 Idempotency/
+│   │       ├── ProcessedEvent.cs
+│   │       └── IIdempotencyService.cs
+│   └── 📁 Application/
+│       └── 📁 Behaviors/                   # MediatR pipeline
+│           ├── LoggingBehavior.cs
+│           └── TransactionBehavior.cs
+│
+├── 📁 API/                                 # ENTRY POINT (Host)
+│   ├── 📁 Controllers/
+│   │   ├── OrdersController.cs             # Delegates to Orders module
+│   │   ├── CustomersController.cs
+│   │   └── InventoryController.cs
+│   ├── Program.cs                          # Module composition
+│   └── appsettings.json
+│
+└── 📁 Database/
+    └── 📁 Schemas/                         # DDL scripts for schema separation
+        ├── orders_schema.sql
+        ├── customers_schema.sql
+        ├── inventory_schema.sql
+        └── notifications_schema.sql
+</code></pre>
+<p><strong>Key points of the structure:</strong></p>
+<ol>
+<li><p><strong>Each module is self-contained</strong>: it contains its own application logic, domain, infrastructure, and contracts. There are no direct dependencies between the internal folders of different modules.</p>
+</li>
+<li><p><strong>Contracts define the public interface</strong>: only what&#39;s in the <code>Contracts</code> folder can be referenced by other modules. This includes Integration Events and public service interfaces.</p>
+</li>
+<li><p><strong>The Shared Kernel is minimal</strong>: it contains only base abstractions (Entity, AggregateRoot, event interfaces) and common infrastructure (EventBus, Outbox). It contains no business logic.</p>
+</li>
+<li><p><strong>The API Host composes the modules</strong>: the API project contains no business logic, it only registers modules and exposes HTTP endpoints.</p>
+</li>
+<li><p><strong>Database with schema separation</strong>: each module has its own SQL schema, guaranteeing logical isolation even on a shared physical database.</p>
+</li>
+</ol>
+<hr>
+<h2>Database Design in the Modular Monolith</h2>
+<p>One of the most underestimated challenges in designing a modular monolith concerns the database. How do you reconcile module autonomy with the existence of a shared database?</p>
+<h3>The fundamental principle: exclusive ownership</h3>
+<p>Each module must have <strong>exclusive ownership</strong> over its own tables. No other module can directly access these tables, neither for reading nor writing. This principle, seemingly rigid, is what allows modules to evolve independently.</p>
+<p>In practice, this translates to:</p>
+<ul>
+<li>Schema separation (or table prefixes) per module</li>
+<li>Access to other modules&#39; data only through the owning module&#39;s public APIs</li>
+<li>No foreign keys between tables of different modules</li>
+</ul>
+<h3>Normalization vs Denormalization: the cross-module reference dilemma</h3>
+<p>When a module needs data managed by another module, an architectural dilemma presents itself. Let&#39;s take a concrete example: the <em>Orders</em> module needs to display customer information, managed by the <em>Customers</em> module.</p>
+<h4>Approach 1: Soft Link (reference via ID)</h4>
+<p>The soft link maintains only the identifier of the external entity.</p>
+<pre><code>-- Table in the Orders module
+CREATE TABLE orders (
+    id UUID PRIMARY KEY,
+    customer_id UUID NOT NULL,  -- Just the ID, no FK to customers
+    order_date TIMESTAMP,
+    total_amount DECIMAL(10,2)
+);
+</code></pre>
+<p>With this approach, every time the Orders module needs customer information (name, email, shipping address), it must invoke the Customers module&#39;s API.</p>
+<p><strong>Advantages of Soft Link:</strong></p>
+<ul>
+<li>Data always updated and consistent</li>
+<li>No information duplication</li>
+<li>The Customers module is the single source of truth</li>
+<li>Changes to customer data immediately visible</li>
+</ul>
+<p><strong>Disadvantages of Soft Link:</strong></p>
+<ul>
+<li>Runtime dependency on the Customers module</li>
+<li>Additional latency for every query requiring customer data</li>
+<li>If the Customers module is slow or unavailable, Orders is affected too</li>
+<li>Complex queries requiring logical joins become inefficient</li>
+</ul>
+<h4>Approach 2: Snapshot (local copy of data)</h4>
+<p>The snapshot maintains a local copy of the necessary data at the time of order creation.</p>
+<pre><code>-- Table in the Orders module
+CREATE TABLE orders (
+    id UUID PRIMARY KEY,
+    customer_id UUID NOT NULL,
+    -- Snapshot of customer data at the time of the order
+    customer_name VARCHAR(255) NOT NULL,
+    customer_email VARCHAR(255) NOT NULL,
+    shipping_address_snapshot JSONB NOT NULL,
+    order_date TIMESTAMP,
+    total_amount DECIMAL(10,2)
+);
+</code></pre>
+<p><strong>Advantages of Snapshot:</strong></p>
+<ul>
+<li>Complete autonomy of the Orders module</li>
+<li>No runtime dependency</li>
+<li>Performant queries without external calls</li>
+<li>Natural historization (the customer&#39;s address at the time of the order is preserved)</li>
+<li>Resilience: Orders works even if Customers is offline</li>
+</ul>
+<p><strong>Disadvantages of Snapshot:</strong></p>
+<ul>
+<li>Data duplication</li>
+<li>Potentially stale data (if the customer changes email)</li>
+<li>Higher storage usage</li>
+<li>Complexity in deciding when and what to snapshot</li>
+</ul>
+<h4>Which approach to choose?</h4>
+<p>The choice depends on the business context:</p>
+<p><strong>Use Soft Link when:</strong></p>
+<ul>
+<li>Data must always be updated in real time</li>
+<li>The referenced entity is subject to frequent relevant changes</li>
+<li>The additional latency is acceptable</li>
+<li>There&#39;s a strong consistency requirement</li>
+</ul>
+<p><strong>Use Snapshot when:</strong></p>
+<ul>
+<li>You need to preserve historical state (what the data was <em>at that moment</em>)</li>
+<li>Module autonomy and performance are priorities</li>
+<li>Snapshotted data rarely changes or changes aren&#39;t relevant to the consumer module</li>
+<li>You want resilience in case of source module failure</li>
+</ul>
+<p>In the case of orders, snapshot is often the right choice: we want to know <em>what address the order was shipped to</em>, not the customer&#39;s current address.</p>
+<hr>
+<h2>Asynchronous Communication Between Modules</h2>
+<p>In a well-designed modular monolith, communication between modules occurs primarily <strong>asynchronously</strong> through events. This pattern, borrowed from the microservices world, brings significant benefits even within a single process.</p>
+<h3>Why asynchronous?</h3>
+<p>Synchronous communication (direct calls to another module&#39;s public methods) creates temporal coupling: the calling module must wait for the response, and if the called module is slow or fails, the problem propagates.</p>
+<p>Asynchronous communication through events reverses this dynamic:</p>
+<ul>
+<li>The producer module publishes an event and proceeds immediately</li>
+<li>Interested modules react to the event when and how they prefer</li>
+<li>Coupling is reduced: the producer doesn&#39;t know the consumers</li>
+</ul>
+<h3>Practical implementation</h3>
+<p>In a modular monolith, events can travel through:</p>
+<ul>
+<li>An in-process message broker (like MediatR in .NET or a custom EventBus)</li>
+<li>An internal persistent queue (database table used as a queue)</li>
+<li>An external broker (RabbitMQ, Kafka) for greater resilience</li>
+</ul>
+<p>An example flow:</p>
+<pre><code>1. The Orders module completes an order
+2. Orders publishes the &quot;OrderCompleted&quot; event with relevant data
+3. The Inventory module receives the event and decrements stock
+4. The Notifications module receives the event and sends the confirmation email
+5. The Analytics module receives the event and updates statistics
+</code></pre>
+<p>Each module reacts independently, without Orders needing to know about the existence of Inventory, Notifications, or Analytics.</p>
+<hr>
+<h2>Transactional Outbox: Guaranteeing Event Delivery</h2>
+<p>One of the most insidious problems in asynchronous communication is guaranteeing that events are actually published. Consider this scenario:</p>
+<pre><code>BEGIN TRANSACTION;
+    UPDATE orders SET status = &#39;completed&#39; WHERE id = ?;
+    -- Publish event to message broker
+COMMIT;
+</code></pre>
+<p>What happens if the database commit succeeds, but event publication fails (network timeout, broker unavailable)? The order appears completed in the database, but no other module is informed. We have an <strong>inconsistency</strong>.</p>
+<p>The opposite problem is equally serious: if we publish the event before the commit and then the commit fails, we&#39;ve notified an event for an operation that never happened.</p>
+<h3>The solution: Transactional Outbox Pattern</h3>
+<p>The <strong>Transactional Outbox</strong> pattern elegantly solves this problem using the database itself as a buffer for events.</p>
+<pre><code>BEGIN TRANSACTION;
+    -- 1. Execute the business operation
+    UPDATE orders SET status = &#39;completed&#39; WHERE id = ?;
+    
+    -- 2. Write the event to the outbox table (same transaction!)
+    INSERT INTO outbox (id, event_type, payload, created_at, processed)
+    VALUES (?, &#39;OrderCompleted&#39;, &#39;{&quot;orderId&quot;: &quot;...&quot;, ...}&#39;, NOW(), false);
+COMMIT;
+</code></pre>
+<p>The outbox table might have this structure:</p>
+<pre><code class="language-sql">CREATE TABLE outbox (
+    id UUID PRIMARY KEY,
+    event_type VARCHAR(255) NOT NULL,
+    payload JSONB NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    processed BOOLEAN DEFAULT false,
+    processed_at TIMESTAMP NULL,
+    retry_count INT DEFAULT 0
+);
+</code></pre>
+<p>A separate process (Outbox Processor) periodically reads the outbox table and publishes events not yet processed:</p>
+<pre><code>1. SELECT * FROM outbox WHERE processed = false ORDER BY created_at LIMIT 100;
+2. For each record:
+   a. Publish the event to the message broker
+   b. UPDATE outbox SET processed = true, processed_at = NOW() WHERE id = ?;
+</code></pre>
+<h3>Advantages of Transactional Outbox</h3>
+<ul>
+<li><strong>Guaranteed atomicity</strong>: the event is written in the same transaction as the business operation</li>
+<li><strong>At-least-once delivery</strong>: if publication fails, the event remains in the outbox and will be retried</li>
+<li><strong>Order preserved</strong>: events are processed in creation order</li>
+<li><strong>Resilience</strong>: the system tolerates temporary message broker downtime</li>
+<li><strong>Auditability</strong>: the outbox table serves as a log of published events</li>
+</ul>
+<h3>Implementation Considerations</h3>
+<p>The publication process can be implemented as:</p>
+<ul>
+<li>A scheduled job (polling the table every N seconds)</li>
+<li>A background worker using LISTEN/NOTIFY (PostgreSQL) or Change Data Capture</li>
+<li>A separate process with exponential backoff logic for retries</li>
+</ul>
+<hr>
+<h2>Consumer Idempotency</h2>
+<p>If the Transactional Outbox guarantees <strong>at-least-once delivery</strong>, we must prepare for the possibility that the same event is delivered multiple times. This can happen for various reasons:</p>
+<ul>
+<li>The consumer processes the event but crashes before confirming successful processing</li>
+<li>Temporary network partition causes automatic retries</li>
+<li>Bug in the messaging system</li>
+</ul>
+<p>An <strong>idempotent</strong> consumer is a consumer that produces the same result regardless of how many times it receives the same message.</p>
+<h3>The double processing problem</h3>
+<p>Imagine the Inventory module receives the <code>OrderCompleted</code> event twice for the same order. Without protections:</p>
+<pre><code>Event 1: OrderCompleted(orderId: 123, items: [{sku: &quot;ABC&quot;, qty: 2}])
+  → Inventory decrements ABC by 2 units (stock: 100 → 98)
+
+Event 2 (duplicate): OrderCompleted(orderId: 123, items: [{sku: &quot;ABC&quot;, qty: 2}])
+  → Inventory decrements ABC by 2 units (stock: 98 → 96)  // ERROR!
+</code></pre>
+<p>The result is incorrect stock. In other contexts (payments, shipments), the consequences could be much more serious.</p>
+<h3>Idempotency Key: the solution</h3>
+<p>The most robust strategy to guarantee idempotency is to use an <strong>Idempotency Key</strong>: a unique identifier associated with each event that allows recognizing duplicates.</p>
+<pre><code class="language-sql">CREATE TABLE processed_events (
+    idempotency_key VARCHAR(255) PRIMARY KEY,
+    processed_at TIMESTAMP NOT NULL,
+    result JSONB NULL  -- Optional: stores the result to respond to duplicates
+);
+</code></pre>
+<p>The consumer, before processing an event, checks if it has already been processed:</p>
+<pre><code class="language-python">def handle_order_completed(event):
+    idempotency_key = f&quot;OrderCompleted:{event.order_id}&quot;
+    
+    # Check if already processed
+    if exists_in_processed_events(idempotency_key):
+        logger.info(f&quot;Event already processed, ignoring: {idempotency_key}&quot;)
+        return
+    
+    # Process the event
+    with transaction():
+        decrement_inventory(event.items)
+        
+        # Record the processing (same transaction!)
+        insert_processed_event(idempotency_key)
+</code></pre>
+<h3>Best practices for Idempotency Key</h3>
+<p><strong>Key composition</strong>: the idempotency key should uniquely identify the operation, not just the message. A good key could be:</p>
+<ul>
+<li><code>{event_type}:{entity_id}</code> for simple events</li>
+<li><code>{event_type}:{entity_id}:{version}</code> if the entity can generate multiple events of the same type</li>
+<li><code>{event_type}:{correlation_id}</code> for complex flows</li>
+</ul>
+<p><strong>Key storage</strong>: registering the idempotency key must happen in the same transaction as the processing. Otherwise, if the system crashes between processing and registration, the duplicate will be processed again.</p>
+<p><strong>Periodic cleanup</strong>: the <code>processed_events</code> table will grow over time. Implement a retention policy (e.g., delete records older than 30 days) based on your redelivery SLA.</p>
+<p><strong>Response to duplicates</strong>: in some cases, you might want to return the same result of an already completed operation. Storing the result along with the idempotency key allows this.</p>
+<hr>
+<h2>Putting It All Together: A Coherent Architecture</h2>
+<p>Let&#39;s recap how these patterns combine in a well-designed modular monolith:</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     MODULAR MONOLITH                            │
+│                                                                 │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
+│  │   Orders     │    │  Inventory   │    │Notifications │      │
+│  │   Module     │    │   Module     │    │   Module     │      │
+│  │              │    │              │    │              │      │
+│  │ ┌──────────┐ │    │ ┌──────────┐ │    │ ┌──────────┐ │      │
+│  │ │  Orders  │ │    │ │Inventory │ │    │ │Templates │ │      │
+│  │ │  Table   │ │    │ │  Table   │ │    │ │  Table   │ │      │
+│  │ └──────────┘ │    │ └──────────┘ │    │ └──────────┘ │      │
+│  │ ┌──────────┐ │    │ ┌──────────┐ │    │ ┌──────────┐ │      │
+│  │ │  Outbox  │ │    │ │Processed │ │    │ │Processed │ │      │
+│  │ │  Table   │ │    │ │ Events   │ │    │ │ Events   │ │      │
+│  │ └──────────┘ │    │ └──────────┘ │    │ └──────────┘ │      │
+│  └──────┬───────┘    └──────▲───────┘    └──────▲───────┘      │
+│         │                   │                   │               │
+│         │    ┌──────────────┴───────────────────┘               │
+│         │    │                                                  │
+│         ▼    │                                                  │
+│  ┌───────────┴────┐                                             │
+│  │  Event Bus /   │                                             │
+│  │ Message Broker │                                             │
+│  └────────────────┘                                             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<p>The typical flow:</p>
+<ol>
+<li><strong>Orders Module</strong> receives an order completion request</li>
+<li>In a single transaction:<ul>
+<li>Updates the order status</li>
+<li>Writes the <code>OrderCompleted</code> event to its <strong>Outbox</strong> table</li>
+</ul>
+</li>
+<li>The <strong>Outbox Processor</strong> reads the event and publishes it to the <strong>Event Bus</strong></li>
+<li><strong>Inventory Module</strong> receives the event:<ul>
+<li>Checks the <strong>Idempotency Key</strong> in the <code>processed_events</code> table</li>
+<li>If new, processes the event and records the key (same transaction)</li>
+<li>If duplicate, ignores it</li>
+</ul>
+</li>
+<li><strong>Notifications Module</strong> follows the same pattern</li>
+</ol>
+<hr>
+<h2>Conclusions</h2>
+<p>The modular monolith architecture is not a step backward from microservices, but a pragmatic recognition that architectural complexity has a cost. For many organizations, this cost exceeds the benefits.</p>
+<p>The patterns we&#39;ve explored (Transactional Outbox, Idempotency Key, asynchronous communication, cross-module reference strategies) are not exclusive to microservices. Applied to a modular monolith, they allow obtaining many of the architectural benefits of distributed systems while maintaining the operational simplicity of a monolithic application.</p>
+<p>True architectural maturity is not about following trends, but about understanding trade-offs and choosing the solution most suited to your context. And for many contexts, that context is a well-structured monolith.</p>
+<hr>
+<p><em>&quot;Make it work, make it right, make it fast&quot;</em> — Kent Beck</p>
+<p>In the case of software architecture, we might add: <em>&quot;...and keep it simple until you have a reason not to.&quot;</em></p>
+      </article>
+    
+  </main>
+  
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Danilo Paissan. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  
+      <div id="cookie-banner" class="cookie-banner" style="display: none;">
+        <div class="cookie-content">
+          <h3>Cookie Notice</h3>
+          <p>This site does not use tracking or profiling cookies. Technical cookies are only used for site functionality.</p>
+          <div class="cookie-buttons">
+            <button onclick="acceptCookies()" class="btn-accept">Accept</button>
+            <button onclick="rejectCookies()" class="btn-reject">Reject</button>
+          </div>
+        </div>
+      </div>
+      
+      <style>
+        .cookie-banner {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: var(--color-dark-gray);
+          color: white;
+          z-index: 1000;
+          padding: 1rem;
+        }
+        
+        .cookie-content {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        
+        .cookie-content h3 {
+          margin-bottom: 0.5rem;
+        }
+        
+        .cookie-content p {
+          margin-bottom: 1rem;
+        }
+        
+        .cookie-buttons {
+          display: flex;
+          gap: 1rem;
+        }
+        
+        .cookie-buttons button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+        }
+        
+        .btn-accept {
+          background: var(--color-light-silver);
+          color: var(--color-dark-gray);
+        }
+        
+        .btn-reject {
+          background: var(--color-medium-gray);
+          color: white;
+        }
+        
+        .cookie-rejected {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          text-align: center;
+        }
+      </style>
+      
+      <script>
+        function checkCookieConsent() {
+          const consent = localStorage.getItem('cookieConsent');
+          if (consent === 'rejected') {
+            document.body.innerHTML = `
+              <div class="cookie-rejected">
+                <h2>You need to accept cookies to access the site.</h2>
+                <button onclick="resetCookieConsent()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-medium-gray); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Accept
+                </button>
+              </div>
+            `;
+            return;
+          }
+          if (!consent) {
+            document.getElementById('cookie-banner').style.display = 'block';
+          }
+        }
+        
+        function acceptCookies() {
+          localStorage.setItem('cookieConsent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+        }
+        
+        function rejectCookies() {
+          localStorage.setItem('cookieConsent', 'rejected');
+          location.reload();
+        }
+        
+        function resetCookieConsent() {
+          localStorage.removeItem('cookieConsent');
+          location.reload();
+        }
+        
+        // Check consent on page load
+        document.addEventListener('DOMContentLoaded', checkCookieConsent);
+      </script>
+    
+  
+  <script>
+    function switchLanguage(lang) {
+      const currentPath = window.location.pathname;
+      const filename = currentPath.split('/').pop() || 'index.html';
+      
+      let newFilename;
+      if (lang === 'en') {
+        if (filename === 'index.html') {
+          newFilename = 'index-en.html';
+        } else if (filename === 'chi-sono.html') {
+          newFilename = 'about.html';
+        } else if (!filename.includes('-en.html')) {
+          newFilename = filename.replace('.html', '-en.html');
+        } else {
+          newFilename = filename;
+        }
+      } else {
+        if (filename === 'index-en.html') {
+          newFilename = 'index.html';
+        } else if (filename === 'about.html') {
+          newFilename = 'chi-sono.html';
+        } else if (filename.includes('-en.html')) {
+          newFilename = filename.replace('-en.html', '.html');
+        } else {
+          newFilename = filename;
+        }
+      }
+      
+      window.location.href = newFilename;
+    }
+  </script>
+</body>
+</html>

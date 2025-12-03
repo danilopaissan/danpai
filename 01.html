@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Architettura Monolitica Modulare: il ritorno al monolite (ma fatto bene) - Danilo Paissan</title>
+  <title>SimplePress: Anatomia di un Generatore di Siti Statici - Danilo Paissan</title>
   <meta name="description" content="Trentino dentro, ligure fuori">
   <style>
       :root {
@@ -236,489 +236,388 @@
     
       <a href="index.html" class="back-link">&larr; Torna alla home</a>
       <article class="post-content">
-        <h1>Architettura Monolitica Modulare: il ritorno al monolite (ma fatto bene)</h1>
-        <p>Nel panorama dello sviluppo software, le architetture applicative hanno attraversato diverse ere, ciascuna con le proprie promesse e i propri compromessi. Oggi assistiamo a un fenomeno interessante: dopo anni di corsa verso i microservizi, molte organizzazioni stanno riscoprendo il valore di un&#39;architettura più semplice ma strutturata. Benvenuti nell&#39;era del <strong>Monolite Modulare</strong>.</p>
+        <h1>SimplePress: Anatomia di un Generatore di Siti Statici</h1>
+        <hr>
+<h2>Un Viaggio di Trent&#39;Anni nel Web</h2>
+<p>Prima di addentrarci nei dettagli tecnici, lasciatemi raccontare una storia personale. Una storia che probabilmente condivido con molti di voi.</p>
+<p>Trent&#39;anni fa, quando ho iniziato a muovere i primi passi sul web, i siti erano statici per definizione. File HTML scritti a mano, magari con qualche immagine GIF animata e uno sfondo piastrellato discutibile. Era un&#39;epoca pionieristica: si imparava l&#39;HTML da tutorial sparsi in rete, si caricavano i file via FTP, e ogni pagina era un piccolo manufatto artigianale. C&#39;era qualcosa di genuino in quella semplicità.</p>
+<p>Poi è arrivato WordPress, e con lui la promessa di rendere tutto più facile. E per un po&#39; è stato vero. Ho abbracciato con entusiasmo il mondo dei CMS dinamici: database, PHP, temi, plugin. Potevi fare qualsiasi cosa! Volevi un form di contatto? C&#39;era un plugin. Un carosello? Un plugin. SEO? Plugin. Ogni problema aveva la sua soluzione preconfezionata.</p>
+<p>Ma la complessità cresce in modo subdolo. Un plugin tira l&#39;altro, i temi diventano framework, gli aggiornamenti si accumulano, e prima che te ne accorga ti ritrovi a gestire un ecosistema fragile dove ogni update rischia di rompere qualcosa. Ho passato più tempo a debuggare conflitti tra plugin che a scrivere contenuti. La manutenzione era diventata un lavoro... un lavoro che facevo già otto ore al giorno. </p>
+<p>C&#39;è stato un periodo di rigetto, lo ammetto. Ho smesso di scrivere sul web anche perché gestire tutta la baracca era diventata una palla. Il sito rimaneva lì, con i suoi plugin obsoleti e le sue vulnerabilità potenziali, come un giardino abbandonato che ti fa sentire in colpa ogni volta che ci passi davanti.</p>
+<p>Poi ho deciso di ricominciare, ma con un approccio diverso. <strong>Minimalista</strong>. Solo quello che mi serve. Ho voluto tornare a quella semplicità originaria, ma con gli strumenti moderni. Niente database, niente CMS pesanti, niente dipendenze che si rompono. Solo file di testo che diventano pagine web. Ed è così che è nato SimplePress.</p>
+<h3>I Vantaggi dei Siti Statici</h3>
+<p>Un sito statico è composto solo da file HTML, CSS e JavaScript. Non c&#39;è database, non c&#39;è server applicativo, non ci sono query da ottimizzare. I vantaggi sono significativi:</p>
+<p><strong>Velocità</strong>: senza elaborazione server-side, le pagine vengono servite istantaneamente. Il tempo di risposta è limitato solo dalla latenza di rete.</p>
+<p><strong>Sicurezza</strong>: nessun database significa nessuna SQL injection. Nessun CMS significa nessuna vulnerabilità da patchare. La superficie di attacco è ridotta al minimo.</p>
+<p><strong>Costi</strong>: un sito statico può essere ospitato gratuitamente su GitHub Pages, Netlify, o un semplice bucket S3. Niente costi di server, niente scaling da gestire.</p>
+<p><strong>Affidabilità</strong>: meno componenti significa meno cose che possono rompersi. Un sito statico su una CDN ha uptime praticamente garantito.</p>
+<h3>Essere Padroni dei Propri Contenuti</h3>
+<p>C&#39;è un altro aspetto che mi sta particolarmente a cuore, e che va oltre le considerazioni tecniche: <strong>la proprietà dei propri contenuti</strong>.</p>
+<p>Viviamo in un&#39;epoca in cui affidiamo le nostre parole, i nostri pensieri, le nostre creazioni a piattaforme terze. Social network, servizi di blogging, newsletter platform. È comodo, certo. Qualcun altro si occupa dell&#39;infrastruttura, tu devi solo scrivere.</p>
+<p>Ma a che prezzo? I tuoi contenuti esistono finché la piattaforma decide che possono esistere. Un cambio di policy, un algoritmo che decide che sei meno visibile, un servizio che chiude i battenti (vi ricordate Google+? Vine? Tumblr nella sua forma originale?), e anni di impegno possono svanire o diventare inaccessibili.</p>
+<p>E poi c&#39;è la questione della monetizzazione dei tuoi contenuti da parte di altri. Quando scrivi su una piattaforma gratuita, il prodotto sei tu. I tuoi testi, le tue interazioni, i tuoi dati alimentano algoritmi pubblicitari e modelli di business che non ti appartengono.</p>
+<p>Un sito statico, ospitato su un servizio che controlli tu (anche solo un repository GitHub), ti restituisce questa proprietà. I file sono tuoi, in un formato aperto e portabile. Puoi spostarli dove vuoi, quando vuoi. Puoi fare backup, puoi archiviarli, puoi garantire che esisteranno finché lo deciderai tu.</p>
+<p>È per questo che credo che un approccio semplice alla pubblicazione web non sia solo una scelta tecnica, ma anche una scelta di principio. Un modo per riprendersi un pezzetto di sovranità digitale in un mondo dove tendiamo a delegare sempre di più.</p>
+<p>Per un blog personale, un portfolio, o un sito di documentazione, queste caratteristiche superano spesso la flessibilità di un CMS tradizionale. Ed è esattamente in questo contesto che nasce SimplePress.</p>
 <hr>
-<h2>Un viaggio nella storia delle architetture</h2>
-<h3>L&#39;era del Monolite Tradizionale</h3>
-<p>Agli albori dello sviluppo enterprise, il monolite era l&#39;unica opzione praticabile. Un&#39;unica applicazione, un unico deployment, un unico database. La semplicità era il suo punto di forza: tutto il codice risiedeva in un solo progetto, il debugging era lineare, e le transazioni ACID garantivano consistenza dei dati senza sforzi particolari.</p>
-<p>Ma il monolite tradizionale portava con sé problemi significativi. Man mano che l&#39;applicazione cresceva, il codice diventava un intricato groviglio di dipendenze. La famosa <em>Big Ball of Mud</em> non era un&#39;eccezione, ma la norma. Modificare una funzionalità significava rischiare di romperne altre dieci. Il deploy richiedeva il rilascio dell&#39;intera applicazione, anche per una singola correzione. E scalare significava replicare tutto, anche i componenti che non ne avevano bisogno.</p>
-<p><strong>Pro del monolite tradizionale:</strong></p>
-<ul>
-<li>Semplicità di sviluppo iniziale e setup dell&#39;ambiente</li>
-<li>Transazioni ACID native e consistenza immediata</li>
-<li>Debugging e tracing diretti</li>
-<li>Nessun overhead di rete per le chiamate interne</li>
-<li>Deploy semplice (un solo artefatto)</li>
-</ul>
-<p><strong>Contro del monolite tradizionale:</strong></p>
-<ul>
-<li>Accoppiamento stretto tra componenti</li>
-<li>Scalabilità solo verticale o replica completa</li>
-<li>Deploy rischioso e tempi di rilascio lunghi</li>
-<li>Difficoltà nel far lavorare team multipli in parallelo</li>
-<li>Tecnologie vincolate a scelte fatte anni prima</li>
-</ul>
-<h3>L&#39;avvento di SOA</h3>
-<p>A cavallo del millennio, la <strong>Service-Oriented Architecture</strong> prometteva di risolvere i problemi del monolite attraverso la suddivisione in servizi riutilizzabili. L&#39;idea era elegante: componenti indipendenti che comunicano attraverso protocolli standard, orchestrati da un Enterprise Service Bus (ESB).</p>
-<p>SOA introdusse concetti importanti come i contratti di servizio, la riusabilità e l&#39;interoperabilità. Ma nella pratica, molte implementazioni SOA si rivelarono monoliti distribuiti mascherati. L&#39;ESB diventava spesso un single point of failure e un collo di bottiglia. La complessità si era semplicemente spostata, non eliminata.</p>
-<p><strong>Pro di SOA:</strong></p>
-<ul>
-<li>Riusabilità dei servizi tra applicazioni diverse</li>
-<li>Standard di comunicazione ben definiti (SOAP, WS-*)</li>
-<li>Governance centralizzata</li>
-<li>Integrazione tra sistemi eterogenei</li>
-</ul>
-<p><strong>Contro di SOA:</strong></p>
-<ul>
-<li>ESB come single point of failure</li>
-<li>Overhead significativo dei protocolli SOAP/XML</li>
-<li>Complessità di configurazione e manutenzione</li>
-<li>Spesso risultava in &quot;distributed monolith&quot;</li>
-<li>Costi di licenza elevati per gli stack enterprise</li>
-</ul>
-<h3>La rivoluzione dei Microservizi</h3>
-<p>Intorno al 2014, Netflix, Amazon e altre tech company iniziarono a evangelizzare i <strong>microservizi</strong>. Servizi piccoli, indipendenti, ciascuno con il proprio database, deployabili autonomamente. Era la promessa della vera agilità: team autonomi, tecnologie eterogenee, scalabilità granulare.</p>
-<p>I microservizi hanno funzionato brillantemente per organizzazioni con centinaia di sviluppatori e requisiti di scala estremi. Ma per la maggior parte delle aziende, hanno introdotto una complessità operativa sproporzionata. Gestire decine o centinaia di servizi richiede infrastrutture sofisticate: service discovery, circuit breaker, distributed tracing, orchestrazione di container. La consistenza dei dati, prima garantita dalle transazioni ACID, diventa un problema architetturale da risolvere con pattern come Saga o eventual consistency.</p>
-<p><strong>Pro dei microservizi:</strong></p>
-<ul>
-<li>Indipendenza di deployment per ogni servizio</li>
-<li>Scalabilità granulare e ottimizzata</li>
-<li>Team autonomi con ownership chiara</li>
-<li>Libertà tecnologica per ogni servizio</li>
-<li>Fault isolation naturale</li>
-</ul>
-<p><strong>Contro dei microservizi:</strong></p>
-<ul>
-<li>Complessità operativa elevata (orchestrazione, monitoring, networking)</li>
-<li>Latenza di rete per ogni chiamata tra servizi</li>
-<li>Consistenza dei dati difficile da garantire</li>
-<li>Debugging distribuito complesso</li>
-<li>Overhead di infrastruttura significativo</li>
-<li>Richiede maturità DevOps elevata</li>
-</ul>
-<h3>Il presente: Monolite Modulare</h3>
-<p>Il <strong>Monolite Modulare</strong> rappresenta una sintesi pragmatica. Mantiene i vantaggi del monolite (semplicità operativa, transazioni ACID, assenza di latenza di rete) incorporando i principi architetturali che hanno reso i microservizi efficaci: boundaries chiari, basso accoppiamento, alta coesione.</p>
-<p>L&#39;idea fondamentale è strutturare l&#39;applicazione in <strong>moduli</strong> con confini ben definiti, ciascuno responsabile di un bounded context specifico. I moduli comunicano attraverso interfacce esplicite, non attraverso dipendenze dirette sul codice interno degli altri moduli.</p>
-<p><strong>Pro del monolite modulare:</strong></p>
-<ul>
-<li>Semplicità operativa del monolite</li>
-<li>Transazioni ACID quando necessario</li>
-<li>Boundaries architetturali chiari e enforced</li>
-<li>Preparazione naturale per un&#39;eventuale migrazione a microservizi</li>
-<li>Costi di infrastruttura contenuti</li>
-<li>Onboarding degli sviluppatori più semplice</li>
-</ul>
-<p><strong>Contro del monolite modulare:</strong></p>
-<ul>
-<li>Richiede disciplina per mantenere i confini tra moduli</li>
-<li>Scalabilità ancora limitata rispetto ai microservizi</li>
-<li>Deploy dell&#39;intera applicazione per ogni modifica</li>
-<li>Stack tecnologico condiviso tra tutti i moduli</li>
-</ul>
-<h4>Struttura tipica di un progetto</h4>
-<p>Come si traduce concretamente l&#39;architettura modulare nella struttura di un progetto? Ecco uno schema rappresentativo:</p>
-<pre><code>📁 src/
-│
-├── 📁 Modules/
-│   │
-│   ├── 📁 Orders/                          # MODULO ORDERS
-│   │   ├── 📁 Application/                 # Casi d&#39;uso e logica applicativa
-│   │   │   ├── 📁 Commands/
-│   │   │   │   ├── CreateOrder/
-│   │   │   │   │   ├── CreateOrderCommand.cs
-│   │   │   │   │   └── CreateOrderHandler.cs
-│   │   │   │   └── CompleteOrder/
-│   │   │   │       ├── CompleteOrderCommand.cs
-│   │   │   │       └── CompleteOrderHandler.cs
-│   │   │   ├── 📁 Queries/
-│   │   │   │   └── GetOrderById/
-│   │   │   │       ├── GetOrderByIdQuery.cs
-│   │   │   │       └── GetOrderByIdHandler.cs
-│   │   │   └── 📁 EventHandlers/           # Handler per eventi da ALTRI moduli
-│   │   │       └── CustomerUpdatedHandler.cs
-│   │   │
-│   │   ├── 📁 Domain/                      # Entità e logica di dominio
-│   │   │   ├── 📁 Entities/
-│   │   │   │   ├── Order.cs
-│   │   │   │   └── OrderLine.cs
-│   │   │   ├── 📁 ValueObjects/
-│   │   │   │   └── Money.cs
-│   │   │   ├── 📁 Events/                  # Eventi di dominio PUBBLICATI da questo modulo
-│   │   │   │   ├── OrderCreatedEvent.cs
-│   │   │   │   └── OrderCompletedEvent.cs
-│   │   │   └── 📁 Exceptions/
-│   │   │       └── OrderNotFoundException.cs
-│   │   │
-│   │   ├── 📁 Infrastructure/              # Persistenza e servizi esterni
-│   │   │   ├── 📁 Persistence/
-│   │   │   │   ├── OrdersDbContext.cs
-│   │   │   │   ├── 📁 Configurations/      # Mapping EF Core
-│   │   │   │   │   └── OrderConfiguration.cs
-│   │   │   │   ├── 📁 Repositories/
-│   │   │   │   │   └── OrderRepository.cs
-│   │   │   │   └── 📁 Migrations/
-│   │   │   │       └── 20240115_InitialCreate.cs
-│   │   │   └── 📁 Outbox/                  # Transactional Outbox
-│   │   │       └── OrdersOutboxProcessor.cs
-│   │   │
-│   │   ├── 📁 Contracts/                   # INTERFACCIA PUBBLICA DEL MODULO
-│   │   │   ├── 📁 IntegrationEvents/       # Eventi per altri moduli
-│   │   │   │   ├── OrderCompletedIntegrationEvent.cs
-│   │   │   │   └── OrderCancelledIntegrationEvent.cs
-│   │   │   └── 📁 Services/                # API pubblica (interfacce)
-│   │   │       └── IOrderService.cs
-│   │   │
-│   │   └── OrdersModule.cs                 # Registrazione DI del modulo
-│   │
-│   ├── 📁 Customers/                       # MODULO CUSTOMERS
-│   │   ├── 📁 Application/
-│   │   ├── 📁 Domain/
-│   │   ├── 📁 Infrastructure/
-│   │   ├── 📁 Contracts/
-│   │   │   ├── 📁 IntegrationEvents/
-│   │   │   │   └── CustomerUpdatedIntegrationEvent.cs
-│   │   │   └── 📁 Services/
-│   │   │       └── ICustomerService.cs     # Usato da Orders per ottenere dati cliente
-│   │   └── CustomersModule.cs
-│   │
-│   ├── 📁 Inventory/                       # MODULO INVENTORY
-│   │   ├── 📁 Application/
-│   │   │   └── 📁 EventHandlers/
-│   │   │       └── OrderCompletedHandler.cs  # Reagisce a eventi di Orders
-│   │   ├── 📁 Domain/
-│   │   ├── 📁 Infrastructure/
-│   │   │   └── 📁 Idempotency/             # Gestione idempotenza
-│   │   │       └── ProcessedEventsRepository.cs
-│   │   ├── 📁 Contracts/
-│   │   └── InventoryModule.cs
-│   │
-│   └── 📁 Notifications/                   # MODULO NOTIFICATIONS
-│       ├── 📁 Application/
-│       ├── 📁 Domain/
-│       ├── 📁 Infrastructure/
-│       ├── 📁 Contracts/
-│       └── NotificationsModule.cs
-│
-├── 📁 Shared/                              # CODICE CONDIVISO (KERNEL)
-│   ├── 📁 Domain/
-│   │   ├── Entity.cs                       # Classe base per entità
-│   │   ├── AggregateRoot.cs
-│   │   ├── IDomainEvent.cs
-│   │   └── IIntegrationEvent.cs
-│   ├── 📁 Infrastructure/
-│   │   ├── 📁 EventBus/
-│   │   │   ├── IEventBus.cs
-│   │   │   └── InMemoryEventBus.cs
-│   │   ├── 📁 Outbox/
-│   │   │   ├── OutboxMessage.cs
-│   │   │   └── IOutboxProcessor.cs
-│   │   └── 📁 Idempotency/
-│   │       ├── ProcessedEvent.cs
-│   │       └── IIdempotencyService.cs
-│   └── 📁 Application/
-│       └── 📁 Behaviors/                   # Pipeline MediatR
-│           ├── LoggingBehavior.cs
-│           └── TransactionBehavior.cs
-│
-├── 📁 API/                                 # ENTRY POINT (Host)
-│   ├── 📁 Controllers/
-│   │   ├── OrdersController.cs             # Delega al modulo Orders
-│   │   ├── CustomersController.cs
-│   │   └── InventoryController.cs
-│   ├── Program.cs                          # Composizione dei moduli
-│   └── appsettings.json
-│
-└── 📁 Database/
-    └── 📁 Schemas/                         # Script DDL per schema separation
-        ├── orders_schema.sql
-        ├── customers_schema.sql
-        ├── inventory_schema.sql
-        └── notifications_schema.sql
+<h2>L&#39;Architettura di SimplePress</h2>
+<p>SimplePress segue un&#39;architettura modulare e pulita, organizzata in componenti con responsabilità ben definite. Vediamo come si struttura il progetto:</p>
+<pre><code>simplepress/
+├── md-src/              # Sorgenti Markdown
+│   ├── 01.md           # Post numerati (ordine cronologico)
+│   ├── 02.md           # Altri post...
+│   ├── 01-en.md        # Traduzioni inglesi
+│   └── chi-sono.md     # Pagina &quot;Chi sono&quot;
+├── src/                # Codice TypeScript
+│   ├── index.ts        # Entry point CLI
+│   ├── site-generator.ts
+│   ├── markdown-parser.ts
+│   ├── template-engine.ts
+│   ├── types.ts
+│   └── config.ts
+├── build/              # Output HTML generato
+└── dist/               # TypeScript compilato
 </code></pre>
-<p><strong>Punti chiave della struttura:</strong></p>
-<ol>
-<li><p><strong>Ogni modulo è autocontenuto</strong>: contiene la propria logica applicativa, dominio, infrastruttura e contratti. Non esistono dipendenze dirette tra le cartelle interne di moduli diversi.</p>
-</li>
-<li><p><strong>I Contracts definiscono l&#39;interfaccia pubblica</strong>: solo ciò che è nella cartella <code>Contracts</code> può essere referenziato da altri moduli. Questo include gli Integration Events e le interfacce dei servizi pubblici.</p>
-</li>
-<li><p><strong>Lo Shared Kernel è minimale</strong>: contiene solo astrazioni di base (Entity, AggregateRoot, interfacce per eventi) e infrastruttura comune (EventBus, Outbox). Non contiene logica di business.</p>
-</li>
-<li><p><strong>L&#39;API Host compone i moduli</strong>: il progetto API non contiene logica di business, si limita a registrare i moduli e esporre gli endpoint HTTP.</p>
-</li>
-<li><p><strong>Database con schema separation</strong>: ogni modulo ha il proprio schema SQL, garantendo isolamento logico anche su un database fisico condiviso.</p>
-</li>
-</ol>
-<hr>
-<h2>Il design del database nel Monolite Modulare</h2>
-<p>Una delle sfide più sottovalutate nel design di un monolite modulare riguarda il database. Come conciliare l&#39;autonomia dei moduli con l&#39;esistenza di un database condiviso?</p>
-<h3>Il principio fondamentale: ownership esclusiva</h3>
-<p>Ogni modulo deve avere <strong>ownership esclusiva</strong> sulle proprie tabelle. Nessun altro modulo può accedere direttamente a queste tabelle, né in lettura né in scrittura. Questo principio, apparentemente rigido, è ciò che permette ai moduli di evolvere indipendentemente.</p>
-<p>Nella pratica, questo si traduce in:</p>
-<ul>
-<li>Separazione degli schemi (o prefissi nelle tabelle) per modulo</li>
-<li>Accesso ai dati di altri moduli solo attraverso le API pubbliche del modulo proprietario</li>
-<li>Nessuna foreign key tra tabelle di moduli diversi</li>
-</ul>
-<h3>Normalizzazione vs Denormalizzazione: il dilemma dei riferimenti cross-module</h3>
-<p>Quando un modulo ha bisogno di dati gestiti da un altro modulo, si presenta un dilemma architetturale. Prendiamo un esempio concreto: il modulo <em>Orders</em> deve visualizzare informazioni sul cliente, gestito dal modulo <em>Customers</em>.</p>
-<h4>Approccio 1: Soft Link (riferimento tramite ID)</h4>
-<p>Il soft link mantiene solo l&#39;identificativo dell&#39;entità esterna.</p>
-<pre><code>-- Tabella nel modulo Orders
-CREATE TABLE orders (
-    id UUID PRIMARY KEY,
-    customer_id UUID NOT NULL,  -- Solo l&#39;ID, nessuna FK verso customers
-    order_date TIMESTAMP,
-    total_amount DECIMAL(10,2)
-);
-</code></pre>
-<p>Con questo approccio, ogni volta che il modulo Orders necessita di informazioni sul cliente (nome, email, indirizzo di spedizione), deve invocare l&#39;API del modulo Customers.</p>
-<p><strong>Vantaggi del Soft Link:</strong></p>
-<ul>
-<li>Dati sempre aggiornati e consistenti</li>
-<li>Nessuna duplicazione di informazioni</li>
-<li>Il modulo Customers è l&#39;unica source of truth</li>
-<li>Modifiche ai dati del cliente immediatamente visibili</li>
-</ul>
-<p><strong>Svantaggi del Soft Link:</strong></p>
-<ul>
-<li>Dipendenza runtime dal modulo Customers</li>
-<li>Latenza aggiuntiva per ogni query che richiede dati del cliente</li>
-<li>Se il modulo Customers è lento o non disponibile, anche Orders ne risente</li>
-<li>Query complesse che richiedono join logici diventano inefficienti</li>
-</ul>
-<h4>Approccio 2: Snapshot (copia locale dei dati)</h4>
-<p>Lo snapshot mantiene una copia locale dei dati necessari al momento della creazione dell&#39;ordine.</p>
-<pre><code>-- Tabella nel modulo Orders
-CREATE TABLE orders (
-    id UUID PRIMARY KEY,
-    customer_id UUID NOT NULL,
-    -- Snapshot dei dati del cliente al momento dell&#39;ordine
-    customer_name VARCHAR(255) NOT NULL,
-    customer_email VARCHAR(255) NOT NULL,
-    shipping_address_snapshot JSONB NOT NULL,
-    order_date TIMESTAMP,
-    total_amount DECIMAL(10,2)
-);
-</code></pre>
-<p><strong>Vantaggi dello Snapshot:</strong></p>
-<ul>
-<li>Autonomia completa del modulo Orders</li>
-<li>Nessuna dipendenza runtime</li>
-<li>Query performanti senza chiamate esterne</li>
-<li>Storicizzazione naturale (l&#39;indirizzo del cliente al momento dell&#39;ordine è preservato)</li>
-<li>Resilienza: Orders funziona anche se Customers è offline</li>
-</ul>
-<p><strong>Svantaggi dello Snapshot:</strong></p>
-<ul>
-<li>Duplicazione dei dati</li>
-<li>Dati potenzialmente obsoleti (se il cliente cambia email)</li>
-<li>Maggiore occupazione di storage</li>
-<li>Complessità nel decidere quando e cosa snapshotare</li>
-</ul>
-<h4>Quale approccio scegliere?</h4>
-<p>La scelta dipende dal contesto di business:</p>
-<p><strong>Usa Soft Link quando:</strong></p>
-<ul>
-<li>I dati devono essere sempre aggiornati in tempo reale</li>
-<li>L&#39;entità referenziata è soggetta a frequenti modifiche rilevanti</li>
-<li>La latenza aggiuntiva è accettabile</li>
-<li>Esiste un requisito di consistenza forte</li>
-</ul>
-<p><strong>Usa Snapshot quando:</strong></p>
-<ul>
-<li>Hai bisogno di preservare lo stato storico (come era il dato <em>in quel momento</em>)</li>
-<li>L&#39;autonomia e le performance del modulo sono prioritarie</li>
-<li>I dati snapshotati cambiano raramente o le modifiche non sono rilevanti per il modulo consumer</li>
-<li>Vuoi resilienza in caso di failure del modulo sorgente</li>
-</ul>
-<p>Nel caso degli ordini, lo snapshot è spesso la scelta corretta: vogliamo sapere <em>a quale indirizzo è stato spedito l&#39;ordine</em>, non l&#39;indirizzo attuale del cliente.</p>
-<hr>
-<h2>Comunicazione asincrona fra moduli</h2>
-<p>In un monolite modulare ben progettato, la comunicazione tra moduli avviene principalmente in modo <strong>asincrono</strong> attraverso eventi. Questo pattern, mutuato dal mondo dei microservizi, porta benefici significativi anche all&#39;interno di un singolo processo.</p>
-<h3>Perché asincrono?</h3>
-<p>La comunicazione sincrona (chiamate dirette ai metodi pubblici di un altro modulo) crea accoppiamento temporale: il modulo chiamante deve attendere la risposta, e se il modulo chiamato è lento o fallisce, il problema si propaga.</p>
-<p>La comunicazione asincrona tramite eventi inverte questa dinamica:</p>
-<ul>
-<li>Il modulo produttore pubblica un evento e prosegue immediatamente</li>
-<li>I moduli interessati reagiscono all&#39;evento quando e come preferiscono</li>
-<li>L&#39;accoppiamento è ridotto: il produttore non conosce i consumer</li>
-</ul>
-<h3>Implementazione pratica</h3>
-<p>In un monolite modulare, gli eventi possono viaggiare attraverso:</p>
-<ul>
-<li>Un message broker in-process (come MediatR in .NET o un EventBus custom)</li>
-<li>Una coda persistente interna (tabella del database usata come coda)</li>
-<li>Un broker esterno (RabbitMQ, Kafka) per maggiore resilienza</li>
-</ul>
-<p>Un esempio di flusso:</p>
-<pre><code>1. Il modulo Orders completa un ordine
-2. Orders pubblica l&#39;evento &quot;OrderCompleted&quot; con i dati rilevanti
-3. Il modulo Inventory riceve l&#39;evento e decrementa le scorte
-4. Il modulo Notifications riceve l&#39;evento e invia l&#39;email di conferma
-5. Il modulo Analytics riceve l&#39;evento e aggiorna le statistiche
-</code></pre>
-<p>Ogni modulo reagisce indipendentemente, senza che Orders debba conoscere l&#39;esistenza di Inventory, Notifications o Analytics.</p>
-<hr>
-<h2>Transactional Outbox: garantire la consegna degli eventi</h2>
-<p>Uno dei problemi più insidiosi nella comunicazione asincrona è garantire che gli eventi vengano effettivamente pubblicati. Consideriamo questo scenario:</p>
-<pre><code>BEGIN TRANSACTION;
-    UPDATE orders SET status = &#39;completed&#39; WHERE id = ?;
-    -- Pubblica evento su message broker
-COMMIT;
-</code></pre>
-<p>Cosa succede se il commit del database ha successo, ma la pubblicazione dell&#39;evento fallisce (network timeout, broker non disponibile)? L&#39;ordine risulta completato nel database, ma nessun altro modulo ne viene informato. Abbiamo una <strong>inconsistenza</strong>.</p>
-<p>Il problema inverso è altrettanto grave: se pubblichiamo l&#39;evento prima del commit e poi il commit fallisce, abbiamo notificato un evento per un&#39;operazione mai avvenuta.</p>
-<h3>La soluzione: Transactional Outbox Pattern</h3>
-<p>Il pattern <strong>Transactional Outbox</strong> risolve elegantemente questo problema usando il database stesso come buffer per gli eventi.</p>
-<pre><code>BEGIN TRANSACTION;
-    -- 1. Esegui l&#39;operazione di business
-    UPDATE orders SET status = &#39;completed&#39; WHERE id = ?;
-    
-    -- 2. Scrivi l&#39;evento nella tabella outbox (stessa transazione!)
-    INSERT INTO outbox (id, event_type, payload, created_at, processed)
-    VALUES (?, &#39;OrderCompleted&#39;, &#39;{&quot;orderId&quot;: &quot;...&quot;, ...}&#39;, NOW(), false);
-COMMIT;
-</code></pre>
-<p>La tabella outbox potrebbe avere questa struttura:</p>
-<pre><code class="language-sql">CREATE TABLE outbox (
-    id UUID PRIMARY KEY,
-    event_type VARCHAR(255) NOT NULL,
-    payload JSONB NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    processed BOOLEAN DEFAULT false,
-    processed_at TIMESTAMP NULL,
-    retry_count INT DEFAULT 0
-);
-</code></pre>
-<p>Un processo separato (Outbox Processor) legge periodicamente la tabella outbox e pubblica gli eventi non ancora processati:</p>
-<pre><code>1. SELECT * FROM outbox WHERE processed = false ORDER BY created_at LIMIT 100;
-2. Per ogni record:
-   a. Pubblica l&#39;evento sul message broker
-   b. UPDATE outbox SET processed = true, processed_at = NOW() WHERE id = ?;
-</code></pre>
-<h3>Vantaggi del Transactional Outbox</h3>
-<ul>
-<li><strong>Atomicità garantita</strong>: l&#39;evento viene scritto nella stessa transazione dell&#39;operazione di business</li>
-<li><strong>At-least-once delivery</strong>: se la pubblicazione fallisce, l&#39;evento rimane nella outbox e verrà riprovato</li>
-<li><strong>Ordinamento preservato</strong>: gli eventi vengono processati nell&#39;ordine di creazione</li>
-<li><strong>Resilienza</strong>: il sistema tollera downtime temporanei del message broker</li>
-<li><strong>Auditabilità</strong>: la tabella outbox funge da log degli eventi pubblicati</li>
-</ul>
-<h3>Considerazioni implementative</h3>
-<p>Il processo di pubblicazione può essere implementato come:</p>
-<ul>
-<li>Un job schedulato (polling della tabella ogni N secondi)</li>
-<li>Un background worker che usa LISTEN/NOTIFY (PostgreSQL) o Change Data Capture</li>
-<li>Un processo separato con logica di backoff esponenziale per i retry</li>
-</ul>
-<hr>
-<h2>Idempotenza del consumer</h2>
-<p>Se il Transactional Outbox garantisce <strong>at-least-once delivery</strong>, dobbiamo prepararci alla possibilità che lo stesso evento venga consegnato più volte. Questo può accadere per vari motivi:</p>
-<ul>
-<li>Il consumer processa l&#39;evento ma crasha prima di confermare l&#39;avvenuta elaborazione</li>
-<li>Network partition temporanea causa retry automatici</li>
-<li>Bug nel sistema di messaging</li>
-</ul>
-<p>Un consumer <strong>idempotente</strong> è un consumer che produce lo stesso risultato indipendentemente dal numero di volte che riceve lo stesso messaggio.</p>
-<h3>Il problema della doppia elaborazione</h3>
-<p>Immaginiamo che il modulo Inventory riceva due volte l&#39;evento <code>OrderCompleted</code> per lo stesso ordine. Senza protezioni:</p>
-<pre><code>Evento 1: OrderCompleted(orderId: 123, items: [{sku: &quot;ABC&quot;, qty: 2}])
-  → Inventory decrementa ABC di 2 unità (stock: 100 → 98)
+<p>La separazione è netta: i contenuti risiedono in <code>md-src/</code> come file Markdown, il codice sorgente vive in <code>src/</code>, e l&#39;output finale viene generato in <code>build/</code>. Questo approccio mantiene ogni componente isolato e facilmente sostituibile.</p>
+<h3>I Moduli TypeScript</h3>
+<p>Il cuore di SimplePress è composto da sei moduli TypeScript, ognuno con una responsabilità specifica:</p>
+<p><strong><code>types.ts</code></strong> - Le Fondamenta del Sistema dei Tipi</p>
+<pre><code class="language-typescript">export interface Post {
+  id: string;
+  title: string;
+  titleEn?: string;
+  content: string;
+  contentEn?: string;
+  excerpt: string;
+  excerptEn?: string;
+  filename: string;
+  order: number;
+  createdAt: Date;
+}
 
-Evento 2 (duplicato): OrderCompleted(orderId: 123, items: [{sku: &quot;ABC&quot;, qty: 2}])
-  → Inventory decrementa ABC di 2 unità (stock: 98 → 96)  // ERRORE!
+export interface Page {
+  id: string;
+  title: string;
+  titleEn?: string;
+  content: string;
+  contentEn?: string;
+  filename: string;
+}
+
+export type Language = &#39;it&#39; | &#39;en&#39;;
 </code></pre>
-<p>Il risultato è uno stock errato. In altri contesti (pagamenti, spedizioni), le conseguenze potrebbero essere molto più gravi.</p>
-<h3>Idempotency Key: la soluzione</h3>
-<p>La strategia più robusta per garantire idempotenza è utilizzare una <strong>Idempotency Key</strong>: un identificatore univoco associato a ogni evento che permette di riconoscere i duplicati.</p>
-<pre><code class="language-sql">CREATE TABLE processed_events (
-    idempotency_key VARCHAR(255) PRIMARY KEY,
-    processed_at TIMESTAMP NOT NULL,
-    result JSONB NULL  -- Opzionale: memorizza il risultato per rispondere ai duplicati
-);
+<p>Queste interfacce definiscono il contratto che attraversa l&#39;intera applicazione. Un <code>Post</code> ha un titolo, un contenuto, un excerpt (riassunto), e opzionalmente le versioni inglesi di ciascuno. Il campo <code>order</code> determina l&#39;ordinamento cronologico: i numeri più bassi rappresentano i post più vecchi.</p>
+<p><strong><code>config.ts</code></strong> - La Configurazione Centralizzata</p>
+<pre><code class="language-typescript">export const siteConfig: SiteConfig = {
+  title: &#39;Danilo Paissan&#39;,
+  titleEn: &#39;Danilo Paissan&#39;,
+  description: &#39;Trentino dentro, ligure fuori&#39;,
+  descriptionEn: &#39;Trentino inside, ligurian outside&#39;,
+  author: &#39;Danilo Paissan&#39;,
+  colorPalette: {
+    pearl: &#39;#F8F9FA&#39;,
+    lightSilver: &#39;#E9ECEF&#39;,
+    smokeGray: &#39;#CED4DA&#39;,
+    mediumGray: &#39;#6C757D&#39;,
+    darkGray: &#39;#212529&#39;
+  }
+};
 </code></pre>
-<p>Il consumer, prima di elaborare un evento, verifica se è già stato processato:</p>
-<pre><code class="language-python">def handle_order_completed(event):
-    idempotency_key = f&quot;OrderCompleted:{event.order_id}&quot;
-    
-    # Verifica se già processato
-    if exists_in_processed_events(idempotency_key):
-        logger.info(f&quot;Evento già processato, ignoro: {idempotency_key}&quot;)
-        return
-    
-    # Elabora l&#39;evento
-    with transaction():
-        decrement_inventory(event.items)
-        
-        # Registra l&#39;elaborazione (stessa transazione!)
-        insert_processed_event(idempotency_key)
-</code></pre>
-<h3>Best practice per l&#39;Idempotency Key</h3>
-<p><strong>Composizione della chiave</strong>: l&#39;idempotency key dovrebbe identificare univocamente l&#39;operazione, non solo il messaggio. Una buona chiave potrebbe essere:</p>
-<ul>
-<li><code>{event_type}:{entity_id}</code> per eventi semplici</li>
-<li><code>{event_type}:{entity_id}:{version}</code> se l&#39;entità può generare più eventi dello stesso tipo</li>
-<li><code>{event_type}:{correlation_id}</code> per flussi complessi</li>
-</ul>
-<p><strong>Storage della chiave</strong>: la registrazione dell&#39;idempotency key deve avvenire nella stessa transazione dell&#39;elaborazione. Altrimenti, se il sistema crasha tra l&#39;elaborazione e la registrazione, il duplicato verrà processato nuovamente.</p>
-<p><strong>Pulizia periodica</strong>: la tabella <code>processed_events</code> crescerà nel tempo. Implementa una politica di retention (es. elimina record più vecchi di 30 giorni) basata sul tuo SLA di ridelivery.</p>
-<p><strong>Risposta ai duplicati</strong>: in alcuni casi, potresti voler restituire lo stesso risultato di un&#39;operazione già completata. Memorizzare il risultato insieme all&#39;idempotency key permette di farlo.</p>
+<p>La configurazione include anche tutte le traduzioni dell&#39;interfaccia utente: etichette di navigazione, testi del cookie banner, messaggi di sistema. Centralizzare queste informazioni rende semplice personalizzare il sito o aggiungere nuove lingue.</p>
 <hr>
-<h2>Mettere tutto insieme: un&#39;architettura coerente</h2>
-<p>Ricapitoliamo come questi pattern si combinano in un monolite modulare ben progettato:</p>
-<pre><code>┌─────────────────────────────────────────────────────────────────┐
-│                     MONOLITE MODULARE                           │
-│                                                                 │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
-│  │   Orders     │    │  Inventory   │    │Notifications │      │
-│  │   Module     │    │   Module     │    │   Module     │      │
-│  │              │    │              │    │              │      │
-│  │ ┌──────────┐ │    │ ┌──────────┐ │    │ ┌──────────┐ │      │
-│  │ │  Orders  │ │    │ │Inventory │ │    │ │Templates │ │      │
-│  │ │  Table   │ │    │ │  Table   │ │    │ │  Table   │ │      │
-│  │ └──────────┘ │    │ └──────────┘ │    │ └──────────┘ │      │
-│  │ ┌──────────┐ │    │ ┌──────────┐ │    │ ┌──────────┐ │      │
-│  │ │  Outbox  │ │    │ │Processed │ │    │ │Processed │ │      │
-│  │ │  Table   │ │    │ │ Events   │ │    │ │ Events   │ │      │
-│  │ └──────────┘ │    │ └──────────┘ │    │ └──────────┘ │      │
-│  └──────┬───────┘    └──────▲───────┘    └──────▲───────┘      │
-│         │                   │                   │               │
-│         │    ┌──────────────┴───────────────────┘               │
-│         │    │                                                  │
-│         ▼    │                                                  │
-│  ┌───────────┴────┐                                             │
-│  │  Event Bus /   │                                             │
-│  │ Message Broker │                                             │
-│  └────────────────┘                                             │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+<h2>Il Flusso di Generazione</h2>
+<p>Il processo di generazione segue un flusso lineare e prevedibile. Quando eseguiamo <code>npm run build</code>, accade quanto segue:</p>
+<h3>Fase 1: Discovery dei Contenuti</h3>
+<p>Il <code>SiteGenerator</code> inizia esplorando la directory <code>md-src/</code>:</p>
+<pre><code class="language-typescript">private getPostFiles(): string[] {
+  return fs.readdirSync(this.srcDir)
+    .filter(file =&gt; {
+      const isMarkdown = file.endsWith(&#39;.md&#39;);
+      const isNumbered = /^\d+/.test(file);
+      const isNotAboutPage = !file.startsWith(&#39;chi-sono&#39;);
+      const isNotEnglishTranslation = !file.endsWith(&#39;-en.md&#39;);
+      return isMarkdown &amp;&amp; isNumbered &amp;&amp; isNotAboutPage &amp;&amp; isNotEnglishTranslation;
+    })
+    .map(file =&gt; path.join(this.srcDir, file));
+}
 </code></pre>
-<p>Il flusso tipico:</p>
-<ol>
-<li><strong>Orders Module</strong> riceve una richiesta di completamento ordine</li>
-<li>In un&#39;unica transazione:<ul>
-<li>Aggiorna lo stato dell&#39;ordine</li>
-<li>Scrive l&#39;evento <code>OrderCompleted</code> nella sua tabella <strong>Outbox</strong></li>
-</ul>
-</li>
-<li>L&#39;<strong>Outbox Processor</strong> legge l&#39;evento e lo pubblica sull&#39;<strong>Event Bus</strong></li>
-<li><strong>Inventory Module</strong> riceve l&#39;evento:<ul>
-<li>Controlla l&#39;<strong>Idempotency Key</strong> nella tabella <code>processed_events</code></li>
-<li>Se nuovo, elabora l&#39;evento e registra la chiave (stessa transazione)</li>
-<li>Se duplicato, ignora</li>
-</ul>
-</li>
-<li><strong>Notifications Module</strong> segue lo stesso pattern</li>
-</ol>
+<p>I file vengono filtrati con criteri precisi: solo file Markdown, con nome che inizia con un numero (per i post), escludendo la pagina &quot;Chi sono&quot; e le traduzioni inglesi (che verranno associate ai rispettivi post italiani).</p>
+<p>La convenzione di naming è elegante nella sua semplicità: <code>01.md</code> è il primo post, <code>01-en.md</code> è la sua traduzione inglese. Il sistema riconosce automaticamente questa relazione e costruisce post bilingui.</p>
+<h3>Fase 2: Parsing del Markdown</h3>
+<p>Il <code>MarkdownParser</code> si occupa di trasformare i file Markdown in strutture dati utilizzabili. Utilizza la libreria <strong>marked</strong> per la conversione HTML, ma aggiunge funzionalità importanti.</p>
+<p><strong>Estrazione dei Metadati (Frontmatter)</strong></p>
+<p>SimplePress supporta il frontmatter YAML per specificare metadati opzionali:</p>
+<pre><code class="language-markdown">---
+title: Titolo Personalizzato
+titleEn: Custom English Title
+---
+
+# Il Titolo nel Contenuto
+Qui inizia il vero contenuto...
+</code></pre>
+<p>Il parser estrae questi metadati e li separa dal contenuto principale:</p>
+<pre><code class="language-typescript">private extractMetadata(content: string): { metadata: Record&lt;string, string&gt;, cleanContent: string } {
+  const lines = content.split(&#39;\n&#39;);
+  const metadata: Record&lt;string, string&gt; = {};
+  
+  if (lines[0]?.trim() === &#39;---&#39;) {
+    const endIndex = lines.findIndex((line, index) =&gt; index &gt; 0 &amp;&amp; line.trim() === &#39;---&#39;);
+    if (endIndex &gt; 0) {
+      for (let i = 1; i &lt; endIndex; i++) {
+        const line = lines[i];
+        const colonIndex = line.indexOf(&#39;:&#39;);
+        if (colonIndex &gt; 0) {
+          const key = line.substring(0, colonIndex).trim();
+          const value = line.substring(colonIndex + 1).trim();
+          metadata[key] = value;
+        }
+      }
+      cleanContent = lines.slice(endIndex + 1).join(&#39;\n&#39;);
+    }
+  }
+  
+  return { metadata, cleanContent };
+}
+</code></pre>
+<p><strong>Generazione Automatica dell&#39;Excerpt</strong></p>
+<p>Per la homepage, ogni post mostra un breve riassunto. Il parser lo genera automaticamente estraendo i primi 200 caratteri del contenuto, rimuovendo i tag HTML:</p>
+<pre><code class="language-typescript">private generateExcerpt(htmlContent: string, maxLength: number = 200): string {
+  const textContent = htmlContent.replace(/&lt;[^&gt;]*&gt;/g, &#39;&#39;);
+  const firstParagraph = textContent.split(&#39;\n\n&#39;)[0];
+  return firstParagraph.length &gt; maxLength 
+    ? firstParagraph.substring(0, maxLength).trim() + &#39;...&#39;
+    : firstParagraph;
+}
+</code></pre>
+<p><strong>Gestione dei Titoli</strong></p>
+<p>Un dettaglio sottile ma importante: il parser rimuove il primo tag H1 dal contenuto HTML. Perché? Il titolo viene già visualizzato dal template della pagina, quindi includerlo anche nel contenuto causerebbe una duplicazione. Questo tipo di attenzione ai dettagli distingue un tool ben progettato.</p>
+<h3>Fase 3: Generazione dei Template</h3>
+<p>Il <code>TemplateEngine</code> è il componente più corposo, responsabile di trasformare i dati in pagine HTML complete. Genera tre tipi di pagine:</p>
+<p><strong>Homepage</strong> (<code>index.html</code> e <code>index-en.html</code>)</p>
+<p>Mostra l&#39;elenco di tutti i post con titolo ed excerpt. Per la versione inglese, vengono mostrati solo i post che hanno una traduzione disponibile.</p>
+<p><strong>Pagine Post</strong> (<code>01.html</code>, <code>01-en.html</code>, etc.)</p>
+<p>Ogni post ha la sua pagina dedicata, con navigazione per tornare alla home e switch di lingua.</p>
+<p><strong>Pagine Statiche</strong> (<code>chi-sono.html</code> e <code>about.html</code>)</p>
+<p>La pagina &quot;Chi sono&quot; segue lo stesso pattern bilingue.</p>
+<h3>Il Sistema di Stili Inline</h3>
+<p>Una scelta architetturale interessante: SimplePress include tutti gli stili CSS direttamente nell&#39;HTML, evitando file esterni:</p>
+<pre><code class="language-typescript">private getCSSStyles(): string {
+  const { colorPalette } = siteConfig;
+  return `
+    :root {
+      --color-pearl: ${colorPalette.pearl};
+      --color-light-silver: ${colorPalette.lightSilver};
+      --color-smoke-gray: ${colorPalette.smokeGray};
+      --color-medium-gray: ${colorPalette.mediumGray};
+      --color-dark-gray: ${colorPalette.darkGray};
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, &#39;Segoe UI&#39;, Roboto, sans-serif;
+      line-height: 1.6;
+      color: var(--color-dark-gray);
+      background-color: var(--color-pearl);
+    }
+    /* ... altri stili ... */
+  `;
+}
+</code></pre>
+<p>Questa scelta ha pro e contro. Da un lato, ogni pagina è completamente autonoma (non dipende da file esterni). Dall&#39;altro, gli stili vengono ripetuti in ogni file HTML. Per un blog con poche pagine, il trade-off è favorevole: la semplicità vince sulla dimensione dei file.</p>
+<hr>
+<h2>Il Supporto Bilingue</h2>
+<p>Una delle caratteristiche distintive di SimplePress è il supporto nativo per contenuti bilingui (italiano/inglese). L&#39;implementazione è elegante e non invasiva.</p>
+<h3>Contenuti Bilingui</h3>
+<p>Ci sono due modi per fornire contenuti in inglese:</p>
+<p><strong>1. File Separati</strong>: per ogni <code>01.md</code>, si può creare un <code>01-en.md</code> con la traduzione completa. Il sistema li associa automaticamente.</p>
+<p><strong>2. Frontmatter</strong>: per contenuti più brevi, si possono includere le traduzioni direttamente nel frontmatter:</p>
+<pre><code class="language-markdown">---
+titleEn: English Title
+contentEn: English content here...
+excerptEn: English excerpt...
+---
+
+# Titolo Italiano
+Contenuto italiano qui...
+</code></pre>
+<h3>Lo Switch di Lingua</h3>
+<p>Ogni pagina include un selettore di lingua nell&#39;header. Il codice JavaScript che gestisce lo switch è sorprendentemente semplice:</p>
+<pre><code class="language-javascript">function switchLanguage(lang) {
+  const currentPath = window.location.pathname;
+  const filename = currentPath.split(&#39;/&#39;).pop() || &#39;index.html&#39;;
+  
+  let newFilename;
+  if (lang === &#39;en&#39;) {
+    if (filename === &#39;index.html&#39;) {
+      newFilename = &#39;index-en.html&#39;;
+    } else if (filename === &#39;chi-sono.html&#39;) {
+      newFilename = &#39;about.html&#39;;
+    } else if (!filename.includes(&#39;-en.html&#39;)) {
+      newFilename = filename.replace(&#39;.html&#39;, &#39;-en.html&#39;);
+    }
+  } else {
+    // Logica inversa per italiano
+  }
+  
+  window.location.href = newFilename;
+}
+</code></pre>
+<p>La logica mappa ogni pagina italiana alla sua controparte inglese seguendo convenzioni consistenti: <code>index.html</code> ↔ <code>index-en.html</code>, <code>chi-sono.html</code> ↔ <code>about.html</code>, <code>01.html</code> ↔ <code>01-en.html</code>.</p>
+<h3>Gestione dei Post Non Tradotti</h3>
+<p>Cosa succede se un utente cerca di accedere alla versione inglese di un post non tradotto? SimplePress genera una pagina &quot;non disponibile&quot; con un messaggio appropriato, invece di mostrare un errore o il contenuto italiano. È un tocco di attenzione all&#39;esperienza utente.</p>
+<hr>
+<h2>Conformità GDPR: Il Cookie Banner</h2>
+<p>In un&#39;epoca di crescente attenzione alla privacy, SimplePress include un sistema di gestione dei cookie conforme al GDPR e alla direttiva ePrivacy.</p>
+<h3>Il Paradosso del Sito Senza Cookie</h3>
+<p>Ecco un aspetto interessante: SimplePress non utilizza cookie di tracciamento o profilazione. Tecnicamente, potrebbe non servire alcun banner. Tuttavia, la normativa richiede di informare gli utenti anche solo sull&#39;uso di cookie tecnici (come quelli usati per memorizzare il consenso stesso).</p>
+<h3>L&#39;Implementazione</h3>
+<p>Il cookie banner appare al primo accesso e offre due opzioni: Accetta o Rifiuta.</p>
+<pre><code class="language-javascript">function checkCookieConsent() {
+  const consent = localStorage.getItem(&#39;cookieConsent&#39;);
+  if (consent === &#39;rejected&#39;) {
+    document.body.innerHTML = `
+      &lt;div class=&quot;cookie-rejected&quot;&gt;
+        &lt;h2&gt;È necessario accettare i cookie per accedere al sito.&lt;/h2&gt;
+        &lt;button onclick=&quot;resetCookieConsent()&quot;&gt;Accetto&lt;/button&gt;
+      &lt;/div&gt;
+    `;
+    return;
+  }
+  if (!consent) {
+    document.getElementById(&#39;cookie-banner&#39;).style.display = &#39;block&#39;;
+  }
+}
+</code></pre>
+<p>Se l&#39;utente rifiuta i cookie, l&#39;accesso al sito viene bloccato. Può sembrare drastico, ma è una scelta lecita: il sito dichiara trasparentemente di non usare cookie di tracciamento, e l&#39;utente può scegliere di non procedere.</p>
+<p>Il consenso viene memorizzato in <code>localStorage</code>, che tecnicamente non è un cookie ma uno storage locale del browser. Questa scelta evita il paradosso del &quot;cookie per ricordare che non vuoi cookie&quot;.</p>
+<hr>
+<h2>Il Sistema di Build</h2>
+<p>SimplePress offre diversi comandi per gestire il ciclo di sviluppo:</p>
+<pre><code class="language-bash">npm run setup     # Installa dipendenze e compila
+npm run build     # Compila TypeScript e genera il sito
+npm run generate  # Solo generazione (TypeScript già compilato)
+npm run watch     # Rigenera automaticamente ai cambiamenti
+npm run serve     # Server locale per preview
+npm run clean     # Rimuove i file generati
+</code></pre>
+<h3>Watch Mode</h3>
+<p>La modalità watch è particolarmente utile durante la scrittura:</p>
+<pre><code class="language-typescript">watch(): void {
+  console.log(`Watching ${this.srcDir} for changes...`);
+  
+  fs.watch(this.srcDir, { recursive: true }, (eventType, filename) =&gt; {
+    if (filename &amp;&amp; (filename.endsWith(&#39;.md&#39;) || filename.includes(&#39;img/&#39;))) {
+      console.log(`File changed: ${filename}`);
+      console.log(&#39;Regenerating site...&#39;);
+      this.generate();
+    }
+  });
+}
+</code></pre>
+<p>Ogni modifica a un file Markdown o a un&#39;immagine triggera una rigenerazione completa del sito. Per un blog con poche decine di post, questa operazione è istantanea.</p>
+<h3>Gestione delle Immagini</h3>
+<p>SimplePress copia automaticamente le immagini da <code>md-src/img/</code> a <code>build/img/</code>:</p>
+<pre><code class="language-typescript">private copyImages(): void {
+  const srcImgDir = path.join(this.srcDir, &#39;img&#39;);
+  const buildImgDir = path.join(this.buildDir, &#39;img&#39;);
+
+  if (!fs.existsSync(srcImgDir)) {
+    return;
+  }
+
+  if (!fs.existsSync(buildImgDir)) {
+    fs.mkdirSync(buildImgDir, { recursive: true });
+  }
+
+  const files = fs.readdirSync(srcImgDir);
+  for (const file of files) {
+    const srcFile = path.join(srcImgDir, file);
+    const buildFile = path.join(buildImgDir, file);
+    
+    if (fs.statSync(srcFile).isFile()) {
+      fs.copyFileSync(srcFile, buildFile);
+    }
+  }
+}
+</code></pre>
+<p>Nel Markdown, le immagini possono essere referenziate con path relativi: <code>![Descrizione](img/mia-immagine.png)</code>.</p>
+<hr>
+<h2>Il Design System</h2>
+<p>SimplePress utilizza una palette di colori attentamente selezionata, basata su tonalità di grigio che garantiscono leggibilità e un aspetto professionale:</p>
+<table>
+<thead>
+<tr>
+<th>Nome</th>
+<th>Colore</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pearl</td>
+<td>#F8F9FA</td>
+<td>Sfondo principale</td>
+</tr>
+<tr>
+<td>Light Silver</td>
+<td>#E9ECEF</td>
+<td>Header e footer</td>
+</tr>
+<tr>
+<td>Smoke Gray</td>
+<td>#CED4DA</td>
+<td>Bordi</td>
+</tr>
+<tr>
+<td>Medium Gray</td>
+<td>#6C757D</td>
+<td>Testo secondario</td>
+</tr>
+<tr>
+<td>Dark Gray</td>
+<td>#212529</td>
+<td>Testo principale</td>
+</tr>
+</tbody></table>
+<p>Questa palette neutra funziona bene per contenuti testuali, dove il focus deve rimanere sul contenuto stesso piuttosto che sull&#39;interfaccia.</p>
+<h3>Design Responsive</h3>
+<p>Gli stili includono media query per adattarsi a schermi più piccoli:</p>
+<pre><code class="language-css">@media (max-width: 768px) {
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  .post-content {
+    padding: 1.5rem;
+  }
+}
+</code></pre>
+<p>Il layout è mobile-first: funziona bene su smartphone e si espande elegantemente su schermi più grandi.</p>
+<hr>
+<h2>Estendibilità e Personalizzazione</h2>
+<p>SimplePress è progettato per essere facilmente personalizzabile:</p>
+<p><strong>Configurazione</strong>: modificando <code>src/config.ts</code> si possono cambiare titolo, descrizione, autore, palette colori e tutte le traduzioni.</p>
+<p><strong>Stili</strong>: il CSS in <code>template-engine.ts</code> può essere modificato per cambiare completamente l&#39;aspetto del sito.</p>
+<p><strong>Struttura</strong>: aggiungendo nuovi tipi di pagine in <code>types.ts</code> e relativi metodi di generazione, si può estendere il sistema.</p>
+<p><strong>Traduzioni</strong>: aggiungendo nuove chiavi in <code>translations</code>, il supporto per altre lingue è immediato (anche se richiederebbe modifiche al type <code>Language</code>).</p>
 <hr>
 <h2>Conclusioni</h2>
-<p>L&#39;architettura monolitica modulare non è un passo indietro rispetto ai microservizi, ma un riconoscimento pragmatico che la complessità architetturale ha un costo. Per molte organizzazioni, questo costo supera i benefici.</p>
-<p>I pattern che abbiamo esplorato (Transactional Outbox, Idempotency Key, comunicazione asincrona, strategie di riferimento cross-module) non sono esclusivi dei microservizi. Applicati a un monolite modulare, permettono di ottenere molti dei benefici architetturali dei sistemi distribuiti mantenendo la semplicità operativa di un&#39;applicazione monolitica.</p>
-<p>La vera maturità architetturale non sta nel seguire le mode, ma nel comprendere i trade-off e scegliere la soluzione più adatta al proprio contesto. E per molti contesti, quel contesto è un monolite ben strutturato.</p>
+<p>SimplePress rappresenta un approccio minimalista ma completo alla generazione di siti statici. Non compete con Hugo o Jekyll per funzionalità, ma offre qualcosa di diverso: un codebase leggibile e modificabile, che può essere compreso interamente in un pomeriggio.</p>
+<p>Per chi gestisce un blog personale o un piccolo sito, questo livello di controllo è prezioso. Non ci sono dipendenze misteriose, non ci sono comportamenti magici da debuggare, non ci sono aggiornamenti che rischiano di rompere tutto.</p>
+<p>La scelta di TypeScript garantisce type safety e autocompletamento durante lo sviluppo. L&#39;architettura modulare permette di modificare un componente senza impattare gli altri. Il supporto bilingue nativo evita la complessità di plugin esterni. E la conformità GDPR out-of-the-box elimina una preoccupazione comune per i siti europei.</p>
 <hr>
-<p><em>&quot;Make it work, make it right, make it fast&quot;</em> — Kent Beck</p>
-<p>Nel caso dell&#39;architettura software, potremmo aggiungere: <em>&quot;...and keep it simple until you have a reason not to.&quot;</em></p>
+<p><em>Vuoi provare SimplePress? Il setup è semplice:</em></p>
+<pre><code class="language-bash">git clone [repository]
+cd simplepress
+npm run setup
+# Aggiungi i tuoi contenuti in md-src/
+npm run build
+npm run serve
+# Visita http://localhost:8000
+</code></pre>
+<p><em>Il tuo blog statico, bilingue e GDPR-compliant è pronto in pochi minuti.</em></p>
       </article>
     
   </main>
