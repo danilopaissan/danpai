@@ -174,6 +174,29 @@
         color: var(--color-medium-gray);
       }
       
+      .footer-links {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .footer-links a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .footer-links a:hover {
+        color: var(--color-dark-gray);
+        text-decoration: underline;
+      }
+      
+      .footer-links span {
+        color: var(--color-smoke-gray);
+      }
+      
       .language-switcher {
         display: flex;
         gap: 0.5rem;
@@ -231,6 +254,94 @@
         background-color: var(--color-smoke-gray);
       }
       
+      /* Tag Cloud Styles */
+      .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        background-color: var(--color-light-silver);
+        border-radius: 8px;
+        margin: 1.5rem 0;
+      }
+      
+      .tag-cloud-item {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        color: var(--color-dark-gray);
+        text-decoration: none;
+        border-radius: 20px;
+        border: 1px solid var(--color-smoke-gray);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+      
+      .tag-cloud-item:hover {
+        background-color: var(--color-dark-gray);
+        color: white;
+        transform: scale(1.05);
+      }
+      
+      .tag-cloud-intro {
+        text-align: center;
+        color: var(--color-medium-gray);
+        margin-bottom: 1rem;
+      }
+      
+      .tag-sections {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+      
+      .tag-section {
+        background-color: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 1.5rem;
+      }
+      
+      .tag-section h3 {
+        color: var(--color-dark-gray);
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid var(--color-smoke-gray);
+        padding-bottom: 0.5rem;
+      }
+      
+      .tag-post-count {
+        color: var(--color-medium-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      
+      .tag-posts-list {
+        list-style: none;
+        padding: 0;
+      }
+      
+      .tag-posts-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--color-light-silver);
+      }
+      
+      .tag-posts-list li:last-child {
+        border-bottom: none;
+      }
+      
+      .tag-posts-list a {
+        color: var(--color-dark-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .tag-posts-list a:hover {
+        color: var(--color-medium-gray);
+        text-decoration: underline;
+      }
+
       @media (max-width: 768px) {
         .nav-links {
           gap: 1rem;
@@ -242,6 +353,10 @@
         
         .post-content {
           padding: 1.5rem;
+        }
+        
+        .tag-cloud {
+          padding: 1rem;
         }
       }
     </style>
@@ -292,6 +407,11 @@
   
   <footer>
     <div class="container">
+      <div class="footer-links">
+        <a href="cookie-policy-en.html">Cookie Policy</a>
+        <span>|</span>
+        <a href="topics.html">Topics</a>
+      </div>
       <p>&copy; 2024 Danilo Paissan. All rights reserved.</p>
     </div>
   </footer>
@@ -416,6 +536,10 @@
           newFilename = 'index-en.html';
         } else if (filename === 'chi-sono.html') {
           newFilename = 'about.html';
+        } else if (filename === 'argomenti.html') {
+          newFilename = 'topics.html';
+        } else if (filename === 'cookie-policy.html') {
+          newFilename = 'cookie-policy-en.html';
         } else if (!filename.includes('-en.html')) {
           newFilename = filename.replace('.html', '-en.html');
         } else {
@@ -426,6 +550,10 @@
           newFilename = 'index.html';
         } else if (filename === 'about.html') {
           newFilename = 'chi-sono.html';
+        } else if (filename === 'topics.html') {
+          newFilename = 'argomenti.html';
+        } else if (filename === 'cookie-policy-en.html') {
+          newFilename = 'cookie-policy.html';
         } else if (filename.includes('-en.html')) {
           newFilename = filename.replace('-en.html', '.html');
         } else {

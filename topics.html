@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topics - Danilo Paissan</title>
+  <meta name="description" content="Trentino inside, ligurian outside">
+  <style>
+      :root {
+        --color-pearl: #F8F9FA;
+        --color-light-silver: #E9ECEF;
+        --color-smoke-gray: #CED4DA;
+        --color-medium-gray: #6C757D;
+        --color-dark-gray: #212529;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--color-dark-gray);
+        background-color: var(--color-pearl);
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      header {
+        background-color: var(--color-light-silver);
+        border-bottom: 1px solid var(--color-smoke-gray);
+        padding: 1rem 0;
+      }
+      
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+      }
+      
+      .nav-links a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .nav-links a:hover {
+        color: var(--color-dark-gray);
+      }
+      
+      main {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+      }
+      
+      .post-list {
+        display: grid;
+        gap: 2rem;
+      }
+      
+      .post-card {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: box-shadow 0.3s ease;
+      }
+      
+      .post-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      
+      .post-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .post-title a {
+        color: var(--color-dark-gray);
+        text-decoration: none;
+      }
+      
+      .post-excerpt {
+        color: var(--color-medium-gray);
+        margin-bottom: 1rem;
+      }
+      
+      .read-more {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      
+      .post-content {
+        background: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      
+      .post-content h1, .post-content h2, .post-content h3 {
+        margin-bottom: 1rem;
+        color: var(--color-dark-gray);
+      }
+      
+      .post-content p {
+        margin-bottom: 1rem;
+      }
+      
+      .post-content p a {
+        color: rgb(33, 37, 41);
+        text-decoration: none;
+      }
+      
+      .post-content code {
+        background-color: var(--color-light-silver);
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 4px;
+        padding: 0.2em 0.5em;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Monaco, monospace;
+        font-size: 0.9em;
+        color: #c7254e;
+      }
+
+      .post-content pre code {
+        display: block;
+        background-color: var(--color-dark-gray);
+        color: var(--color-pearl);
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        overflow-x: auto;
+        font-size: 0.875em;
+        line-height: 1.7;
+      }
+
+      .post-content pre {
+        margin-bottom: 1rem;
+      }
+      
+      .back-link {
+        display: inline-block;
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        margin-bottom: 2rem;
+      }
+      
+      footer {
+        background-color: var(--color-light-silver);
+        border-top: 1px solid var(--color-smoke-gray);
+        padding: 2rem 0;
+        text-align: center;
+        color: var(--color-medium-gray);
+      }
+      
+      .footer-links {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .footer-links a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .footer-links a:hover {
+        color: var(--color-dark-gray);
+        text-decoration: underline;
+      }
+      
+      .footer-links span {
+        color: var(--color-smoke-gray);
+      }
+      
+      .language-switcher {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      
+      .language-switcher a {
+        color: var(--color-medium-gray);
+        text-decoration: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .language-switcher a:hover {
+        background-color: var(--color-smoke-gray);
+      }
+      
+      .language-switcher a.active {
+        background-color: var(--color-smoke-gray);
+        color: var(--color-dark-gray);
+      }
+      
+      .social-links {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--color-smoke-gray);
+      }
+      
+      .social-links h3 {
+        margin-bottom: 1rem;
+        color: var(--color-dark-gray);
+      }
+      
+      .social-links-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        list-style: none;
+      }
+      
+      .social-links-list a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: var(--color-light-silver);
+        color: var(--color-dark-gray);
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .social-links-list a:hover {
+        background-color: var(--color-smoke-gray);
+      }
+      
+      /* Tag Cloud Styles */
+      .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        background-color: var(--color-light-silver);
+        border-radius: 8px;
+        margin: 1.5rem 0;
+      }
+      
+      .tag-cloud-item {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        color: var(--color-dark-gray);
+        text-decoration: none;
+        border-radius: 20px;
+        border: 1px solid var(--color-smoke-gray);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+      
+      .tag-cloud-item:hover {
+        background-color: var(--color-dark-gray);
+        color: white;
+        transform: scale(1.05);
+      }
+      
+      .tag-cloud-intro {
+        text-align: center;
+        color: var(--color-medium-gray);
+        margin-bottom: 1rem;
+      }
+      
+      .tag-sections {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+      
+      .tag-section {
+        background-color: white;
+        border: 1px solid var(--color-smoke-gray);
+        border-radius: 8px;
+        padding: 1.5rem;
+      }
+      
+      .tag-section h3 {
+        color: var(--color-dark-gray);
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid var(--color-smoke-gray);
+        padding-bottom: 0.5rem;
+      }
+      
+      .tag-post-count {
+        color: var(--color-medium-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      
+      .tag-posts-list {
+        list-style: none;
+        padding: 0;
+      }
+      
+      .tag-posts-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--color-light-silver);
+      }
+      
+      .tag-posts-list li:last-child {
+        border-bottom: none;
+      }
+      
+      .tag-posts-list a {
+        color: var(--color-dark-gray);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .tag-posts-list a:hover {
+        color: var(--color-medium-gray);
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          gap: 1rem;
+        }
+        
+        .container {
+          padding: 0 15px;
+        }
+        
+        .post-content {
+          padding: 1.5rem;
+        }
+        
+        .tag-cloud {
+          padding: 1rem;
+        }
+      }
+    </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index-en.html" class="logo">
+        Danilo Paissan
+      </a>
+      <div style="display: flex; align-items: center; gap: 2rem;">
+        <ul class="nav-links">
+          <li><a href="index-en.html">Home</a></li>
+          <li><a href="about.html">About Me</a></li>
+        </ul>
+        <div class="language-switcher">
+          <a href="javascript:switchLanguage('en')" class="active">EN</a>
+          <span>|</span>
+          <a href="javascript:switchLanguage('it')" class="">IT</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+  <main class="container">
+    
+      <article class="post-content tag-cloud-page">
+        <h1>Topics</h1>
+        <p class="tag-cloud-intro">Explore the topics covered in various articles.</p>
+        <div class="tag-cloud">
+          <a href="#a-journey-through-the-history-of-architectures" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">A Journey Through the History of Architectures</a> <a href="#a-thirty-year-journey-on-the-web" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">A Thirty-Year Journey on the Web</a> <a href="#anatomy-of-a-deploy-workflow" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Anatomy of a Deploy Workflow</a> <a href="#asynchronous-communication-between-modules" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Asynchronous Communication Between Modules</a> <a href="#automatic-type-conversions" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Automatic Type Conversions</a> <a href="#best-practices" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Best Practices</a> <a href="#conclusions" class="tag-cloud-item" style="font-size: 2.00rem;" data-count="4">Conclusions</a> <a href="#consumer-idempotency" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Consumer Idempotency</a> <a href="#custom-mapping-methods-with--aftermapping-and--beforemapping" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Custom Mapping Methods with @AfterMapping and @BeforeMapping</a> <a href="#database-design-in-the-modular-monolith" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Database Design in the Modular Monolith</a> <a href="#enum-mapping" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Enum Mapping</a> <a href="#extensibility-and-customization" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Extensibility and Customization</a> <a href="#gdpr-compliance-the-cookie-banner" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">GDPR Compliance The Cookie Banner</a> <a href="#github-actions-what-is-it" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">GitHub Actions What Is It</a> <a href="#handling-nulls" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Handling Nulls</a> <a href="#ignoring-specific-fields" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Ignoring Specific Fields</a> <a href="#injecting-spring-services-into-mappers" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Injecting Spring Services into Mappers</a> <a href="#mapper-composition" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Mapper Composition</a> <a href="#mapping-collections-and-maps" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Mapping Collections and Maps</a> <a href="#mapping-fields-with-different-names" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Mapping Fields with Different Names</a> <a href="#mapping-nested-objects" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Mapping Nested Objects</a> <a href="#mapping-with-default-values-and-constants" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Mapping with Default Values and Constants</a> <a href="#mapping-with-java-expressions" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Mapping with Java Expressions</a> <a href="#practical-considerations" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Practical Considerations</a> <a href="#project-configuration" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Project Configuration</a> <a href="#putting-it-all-together-a-coherent-architecture" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Putting It All Together A Coherent Architecture</a> <a href="#shared-configuration-with--mapperconfig" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Shared Configuration with @MapperConfig</a> <a href="#testing-mappers" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Testing Mappers</a> <a href="#the-architecture-of-simplepress" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">The Architecture of SimplePress</a> <a href="#the-build-system" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">The Build System</a> <a href="#the-complete-flow-in-action" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">The Complete Flow in Action</a> <a href="#the-design-system" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">The Design System</a> <a href="#the-first-mapper-from-entity-to-dto" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">The First Mapper From Entity to DTO</a> <a href="#the-generation-flow" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">The Generation Flow</a> <a href="#the-security-question" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">The Security Question</a> <a href="#transactional-outbox-guaranteeing-event-delivery" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Transactional Outbox Guaranteeing Event Delivery</a> <a href="#unexpected-benefits" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Unexpected Benefits</a> <a href="#updating-existing-entities" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Updating Existing Entities</a> <a href="#using-the-mapper-in-a-service" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Using the Mapper in a Service</a> <a href="#what-is-mapstruct-and-how-does-it-work" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">What is MapStruct and How Does It Work</a> <a href="#why-github-pages" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Why GitHub Pages</a> <a href="#why-separate-entity-and-dto" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Why Separate Entity and DTO</a> <a href="#why-separate-source-and-publication" class="tag-cloud-item" style="font-size: 1.00rem;" data-count="1">Why Separate Source and Publication</a>
+        </div>
+        <h2>Related posts</h2>
+        <div class="tag-sections">
+          
+        <div class="tag-section" id="a-journey-through-the-history-of-architectures">
+          <h3>A Journey Through the History of Architectures</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="03-en.html">Modular Monolith Architecture: The Return to the Monolith (Done Right)</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="a-thirty-year-journey-on-the-web">
+          <h3>A Thirty-Year Journey on the Web</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="anatomy-of-a-deploy-workflow">
+          <h3>Anatomy of a Deploy Workflow</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="asynchronous-communication-between-modules">
+          <h3>Asynchronous Communication Between Modules</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="03-en.html">Modular Monolith Architecture: The Return to the Monolith (Done Right)</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="automatic-type-conversions">
+          <h3>Automatic Type Conversions</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="best-practices">
+          <h3>Best Practices</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="conclusions">
+          <h3>Conclusions</h3>
+          <p class="tag-post-count">4 posts</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li><li><a href="03-en.html">Modular Monolith Architecture: The Return to the Monolith (Done Right)</a></li><li><a href="02-en.html">How the Whole Thing Works</a></li><li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="consumer-idempotency">
+          <h3>Consumer Idempotency</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="03-en.html">Modular Monolith Architecture: The Return to the Monolith (Done Right)</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="custom-mapping-methods-with--aftermapping-and--beforemapping">
+          <h3>Custom Mapping Methods with @AfterMapping and @BeforeMapping</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="database-design-in-the-modular-monolith">
+          <h3>Database Design in the Modular Monolith</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="03-en.html">Modular Monolith Architecture: The Return to the Monolith (Done Right)</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="enum-mapping">
+          <h3>Enum Mapping</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="extensibility-and-customization">
+          <h3>Extensibility and Customization</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="gdpr-compliance-the-cookie-banner">
+          <h3>GDPR Compliance The Cookie Banner</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="github-actions-what-is-it">
+          <h3>GitHub Actions What Is It</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="handling-nulls">
+          <h3>Handling Nulls</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="ignoring-specific-fields">
+          <h3>Ignoring Specific Fields</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="injecting-spring-services-into-mappers">
+          <h3>Injecting Spring Services into Mappers</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="mapper-composition">
+          <h3>Mapper Composition</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="mapping-collections-and-maps">
+          <h3>Mapping Collections and Maps</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="mapping-fields-with-different-names">
+          <h3>Mapping Fields with Different Names</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="mapping-nested-objects">
+          <h3>Mapping Nested Objects</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="mapping-with-default-values-and-constants">
+          <h3>Mapping with Default Values and Constants</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="mapping-with-java-expressions">
+          <h3>Mapping with Java Expressions</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="practical-considerations">
+          <h3>Practical Considerations</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="project-configuration">
+          <h3>Project Configuration</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="putting-it-all-together-a-coherent-architecture">
+          <h3>Putting It All Together A Coherent Architecture</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="03-en.html">Modular Monolith Architecture: The Return to the Monolith (Done Right)</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="shared-configuration-with--mapperconfig">
+          <h3>Shared Configuration with @MapperConfig</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="testing-mappers">
+          <h3>Testing Mappers</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="the-architecture-of-simplepress">
+          <h3>The Architecture of SimplePress</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="the-build-system">
+          <h3>The Build System</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="the-complete-flow-in-action">
+          <h3>The Complete Flow in Action</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="the-design-system">
+          <h3>The Design System</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="the-first-mapper-from-entity-to-dto">
+          <h3>The First Mapper From Entity to DTO</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="the-generation-flow">
+          <h3>The Generation Flow</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="01-en.html">SimplePress: Anatomy of a Static Site Generator</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="the-security-question">
+          <h3>The Security Question</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="transactional-outbox-guaranteeing-event-delivery">
+          <h3>Transactional Outbox Guaranteeing Event Delivery</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="03-en.html">Modular Monolith Architecture: The Return to the Monolith (Done Right)</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="unexpected-benefits">
+          <h3>Unexpected Benefits</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="updating-existing-entities">
+          <h3>Updating Existing Entities</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="using-the-mapper-in-a-service">
+          <h3>Using the Mapper in a Service</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="what-is-mapstruct-and-how-does-it-work">
+          <h3>What is MapStruct and How Does It Work</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="why-github-pages">
+          <h3>Why GitHub Pages</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="why-separate-entity-and-dto">
+          <h3>Why Separate Entity and DTO</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="04-en.html">MapStruct with Spring Boot: The Complete Guide to DTO and Entity Mapping</a></li>
+          </ul>
+        </div>
+      
+        <div class="tag-section" id="why-separate-source-and-publication">
+          <h3>Why Separate Source and Publication</h3>
+          <p class="tag-post-count">1 post</p>
+          <ul class="tag-posts-list">
+            <li><a href="02-en.html">How the Whole Thing Works</a></li>
+          </ul>
+        </div>
+      
+        </div>
+      </article>
+    
+  </main>
+  
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="cookie-policy-en.html">Cookie Policy</a>
+        <span>|</span>
+        <a href="topics.html">Topics</a>
+      </div>
+      <p>&copy; 2024 Danilo Paissan. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  
+      <div id="cookie-banner" class="cookie-banner" style="display: none;">
+        <div class="cookie-content">
+          <h3>Cookie Notice</h3>
+          <p>This site does not use tracking or profiling cookies. Technical cookies are only used for site functionality.</p>
+          <div class="cookie-buttons">
+            <button onclick="acceptCookies()" class="btn-accept">Accept</button>
+            <button onclick="rejectCookies()" class="btn-reject">Reject</button>
+          </div>
+        </div>
+      </div>
+      
+      <style>
+        .cookie-banner {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: var(--color-dark-gray);
+          color: white;
+          z-index: 1000;
+          padding: 1rem;
+        }
+        
+        .cookie-content {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        
+        .cookie-content h3 {
+          margin-bottom: 0.5rem;
+        }
+        
+        .cookie-content p {
+          margin-bottom: 1rem;
+        }
+        
+        .cookie-buttons {
+          display: flex;
+          gap: 1rem;
+        }
+        
+        .cookie-buttons button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+        }
+        
+        .btn-accept {
+          background: var(--color-light-silver);
+          color: var(--color-dark-gray);
+        }
+        
+        .btn-reject {
+          background: var(--color-medium-gray);
+          color: white;
+        }
+        
+        .cookie-rejected {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          text-align: center;
+        }
+      </style>
+      
+      <script>
+        function checkCookieConsent() {
+          const consent = localStorage.getItem('cookieConsent');
+          if (consent === 'rejected') {
+            document.body.innerHTML = `
+              <div class="cookie-rejected">
+                <h2>You need to accept cookies to access the site.</h2>
+                <button onclick="resetCookieConsent()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-medium-gray); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Accept
+                </button>
+              </div>
+            `;
+            return;
+          }
+          if (!consent) {
+            document.getElementById('cookie-banner').style.display = 'block';
+          }
+        }
+        
+        function acceptCookies() {
+          localStorage.setItem('cookieConsent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+        }
+        
+        function rejectCookies() {
+          localStorage.setItem('cookieConsent', 'rejected');
+          location.reload();
+        }
+        
+        function resetCookieConsent() {
+          localStorage.removeItem('cookieConsent');
+          location.reload();
+        }
+        
+        // Check consent on page load
+        document.addEventListener('DOMContentLoaded', checkCookieConsent);
+      </script>
+    
+  
+  <script>
+    function switchLanguage(lang) {
+      const currentPath = window.location.pathname;
+      const filename = currentPath.split('/').pop() || 'index.html';
+      
+      let newFilename;
+      if (lang === 'en') {
+        if (filename === 'index.html') {
+          newFilename = 'index-en.html';
+        } else if (filename === 'chi-sono.html') {
+          newFilename = 'about.html';
+        } else if (filename === 'argomenti.html') {
+          newFilename = 'topics.html';
+        } else if (filename === 'cookie-policy.html') {
+          newFilename = 'cookie-policy-en.html';
+        } else if (!filename.includes('-en.html')) {
+          newFilename = filename.replace('.html', '-en.html');
+        } else {
+          newFilename = filename;
+        }
+      } else {
+        if (filename === 'index-en.html') {
+          newFilename = 'index.html';
+        } else if (filename === 'about.html') {
+          newFilename = 'chi-sono.html';
+        } else if (filename === 'topics.html') {
+          newFilename = 'argomenti.html';
+        } else if (filename === 'cookie-policy-en.html') {
+          newFilename = 'cookie-policy.html';
+        } else if (filename.includes('-en.html')) {
+          newFilename = filename.replace('-en.html', '.html');
+        } else {
+          newFilename = filename;
+        }
+      }
+      
+      window.location.href = newFilename;
+    }
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Come funziona la baracca - Danilo Paissan</title>
+  <title>Cookie Policy - Danilo Paissan</title>
   <meta name="description" content="Trentino dentro, ligure fuori">
   <style>
       :root {
@@ -383,118 +383,20 @@
   
   <main class="container">
     
-      <a href="index.html" class="back-link">&larr; Torna alla home</a>
       <article class="post-content">
-        <h1>Come funziona la baracca</h1>
-        <hr>
-<p>C&#39;è qualcosa di profondamente soddisfacente nel premere &quot;push&quot; e sapere che, nel giro di pochi minuti, il tuo sito sarà aggiornato. Nessun FTP da aprire, nessun server da configurare, nessun file da copiare manualmente. Solo tu, il tuo codice, e un sistema che fa tutto il lavoro sporco al posto tuo.</p>
-<p>È esattamente quello che ho fatto in modo che succeda con questo sito: scrivo un articolo in Markdown, faccio commit e push, e il sito si aggiorna da solo. Sembra magia, ma è solo GitHub Actions che fa il suo lavoro. E la cosa bella è che questa &quot;magia&quot; è accessibile a chiunque, gratuitamente.</p>
-<p>In questo articolo vi racconto come ho configurato il sistema di pubblicazione automatica, con un twist interessante: il codice sorgente e il sito pubblicato vivono in due repository separati.</p>
-<hr>
-<h2>Perché Separare Sorgente e Pubblicazione</h2>
-<p>Quando ho iniziato a pensare di utilizzare GitHub Pages per l&#39;hosting di questo sito, mi sono trovato di fronte a una scelta: tenere tutto nello stesso repository o separare il codice sorgente dal sito pubblicato.</p>
-<p>La prima opzione è la più semplice: hai un solo repository, e GitHub Pages pubblica direttamente da lì. È l&#39;approccio che va bene per la maggior parte dei progetti. Ma nel mio caso c&#39;erano alcune considerazioni che mi hanno spinto verso la seconda strada.</p>
-<p><strong>Separazione delle responsabilità</strong>: il repository sorgente contiene TypeScript, configurazioni di build, file di sviluppo, test. Niente di tutto questo serve al sito finale. Mescolando le due cose, il repository diventa confuso e il suo scopo meno chiaro.</p>
-<p><strong>Privacy selettiva</strong>: magari vuoi che il codice sorgente rimanga privato, ma il sito deve essere pubblico. Con repository separati, questa distinzione è naturale.</p>
-<p><strong>Storico git più pulito</strong>: il repository di pubblicazione contiene solo i file HTML, CSS e JavaScript generati. Ogni commit rappresenta una nuova versione del sito, senza il &quot;rumore&quot; dei commit di sviluppo.</p>
-<p><strong>Flessibilità</strong>: puoi avere più repository sorgente che pubblicano sullo stesso sito, o un sorgente che pubblica su più destinazioni diverse.</p>
-<hr>
-<h2>Perchè GitHub Pages</h2>
-<p>Prima di addentrarci nell&#39;automazione, vale la pena ricordare perché GitHub Pages è una scelta ideale per siti statici come blog e portfolio.</p>
-<p><strong>È gratuito</strong>. Per repository pubblici, non paghi nulla. Zero. Niente canoni mensili, niente costi a consumo, niente sorprese in bolletta.</p>
-<p><strong>HTTPS automatico</strong>. Il certificato SSL viene generato e rinnovato automaticamente. Il tuo sito sarà sempre accessibile via HTTPS senza che tu debba fare nulla.</p>
-<p><strong>CDN globale</strong>. I tuoi file vengono distribuiti su server in tutto il mondo. Un visitatore dal Giappone e uno dall&#39;Italia riceveranno i contenuti da server vicini a loro, con tempi di caricamento ottimali.</p>
-<p><strong>Affidabilità</strong>. L&#39;infrastruttura di GitHub è robusta. Il tuo sito sarà online praticamente sempre, senza che tu debba preoccuparti di uptime, backup o disaster recovery.</p>
-<p><strong>Domini personalizzati</strong>. Puoi collegare il tuo dominio personale con pochi click. GitHub si occupa anche del certificato HTTPS per il dominio custom.</p>
-<p>Certo, ci sono limiti: 1GB di spazio, 100GB di banda al mese, niente contenuti dinamici. Ma per un blog personale o un portfolio, questi limiti sono più che sufficienti. E se un giorno dovessi superarli, beh, complimenti: hai un problema che la maggior parte dei blogger vorrebbe avere.</p>
-<hr>
-<h2>GitHub Actions, cos&#39;è?</h2>
-<p>GitHub Actions è il sistema di automazione integrato in GitHub. Puoi pensarlo come un maggiordomo digitale: gli dai una lista di istruzioni, e lui le esegue fedelmente ogni volta che si verifica un certo evento.</p>
-<p>Nel nostro caso, l&#39;evento è un push sul branch principale. Le istruzioni sono: prendi il codice, genera il sito, pubblicalo.</p>
-<p>Le Actions sono definite in file YAML nella cartella <code>.github/workflows/</code> del repository. Ogni file descrive un &quot;workflow&quot;, una sequenza di operazioni da eseguire.</p>
-<p>La cosa bella è che questi workflow vengono eseguiti su macchine virtuali messe a disposizione da GitHub. Non devi configurare server, non devi installare software, non devi preoccuparti di nulla. Definisci cosa vuoi fare, e GitHub si occupa del come.</p>
-<hr>
-<h2>Anatomia di un Workflow di Deploy</h2>
-<p>Vediamo come funziona un workflow che genera un sito statico e lo pubblica su un repository esterno. Non vi mostrerò il codice esatto (ogni progetto ha le sue specificità), ma vi spiego il flusso logico.</p>
-<h3>Trigger: Quando Si Attiva</h3>
-<p>Il workflow si attiva in due modi:</p>
-<ol>
-<li><strong>Automaticamente</strong> quando fai push sul branch principale</li>
-<li><strong>Manualmente</strong> dalla tab Actions su GitHub (utile per forzare un deploy)</li>
-</ol>
-<p>La possibilità di trigger manuale è sottovalutata. A volte vuoi ricostruire il sito senza modificare nulla, magari perché hai aggiornato qualcosa nel repository di destinazione. Con un click, puoi farlo.</p>
-<h3>Fase 1: Preparazione dell&#39;Ambiente</h3>
-<p>La prima cosa che fa il workflow è preparare l&#39;ambiente di lavoro:</p>
-<ol>
-<li><strong>Checkout</strong>: scarica il codice sorgente dal repository</li>
-<li><strong>Setup Node.js</strong>: installa la versione corretta di Node.js</li>
-<li><strong>Installazione dipendenze</strong>: esegue <code>npm ci</code> per installare le dipendenze in modo riproducibile</li>
-</ol>
-<p>Questa fase è identica per qualsiasi progetto Node.js. La magia inizia dopo.</p>
-<h3>Fase 2: Generazione del Sito</h3>
-<p>Qui entra in gioco la logica specifica di SimplePress:</p>
-<ol>
-<li><strong>Pulizia</strong>: rimuove eventuali build precedenti</li>
-<li><strong>Build</strong>: compila TypeScript e genera le pagine HTML</li>
-</ol>
-<p>Al termine di questa fase, la cartella <code>build/</code> contiene il sito statico completo, pronto per essere pubblicato.</p>
-<h3>Fase 3: Pubblicazione sul Repository Esterno</h3>
-<p>Questa è la parte interessante. Il workflow deve prendere i file generati e copiarli su un repository completamente diverso. Come fa?</p>
-<p>GitHub Actions mette a disposizione &quot;actions&quot; predefinite, piccoli moduli riutilizzabili che fanno operazioni comuni. Una di queste, molto popolare, permette di pubblicare file su GitHub Pages, anche su repository esterni.</p>
-<p>L&#39;action:</p>
-<ul>
-<li>Si connette al repository di destinazione usando credenziali sicure</li>
-<li>Crea un nuovo commit con i file generati</li>
-<li>Fa push di questo commit sul branch corretto</li>
-</ul>
-<p>Dal punto di vista del repository di destinazione, è come se qualcuno avesse fatto un commit con i nuovi file. Semplice, pulito, tracciabile.</p>
-<hr>
-<h2>La Questione della Sicurezza</h2>
-<p>Per permettere a un workflow di scrivere su un altro repository, servono delle credenziali. Non puoi semplicemente fare push su un repository qualsiasi (per fortuna!).</p>
-<p>Ci sono due approcci principali:</p>
-<h3>Personal Access Token</h3>
-<p>È un token che generi dal tuo account GitHub e che dà accesso ai tuoi repository. Lo memorizzi come &quot;secret&quot; nel repository sorgente, e il workflow lo usa per autenticarsi.</p>
-<p><strong>Pro</strong>: semplice da configurare.
-<strong>Contro</strong>: dà accesso a tutti i tuoi repository (o a tutti quelli pubblici), non solo a quello di destinazione.</p>
-<h3>Deploy Keys</h3>
-<p>Sono chiavi SSH specifiche per un singolo repository. Ne generi una, aggiungi la parte pubblica al repository di destinazione come &quot;deploy key&quot;, e memorizzi la parte privata come secret nel repository sorgente.</p>
-<p><strong>Pro</strong>: accesso limitato al solo repository di destinazione, più sicuro.
-<strong>Contro</strong>: richiede qualche passaggio in più per la configurazione.</p>
-<p>Per un progetto personale, entrambi gli approcci funzionano. Se sei particolarmente attento alla sicurezza, le Deploy Keys sono la scelta migliore. Io preferisco questo approccio: il principio del minimo privilegio è sempre una buona pratica.</p>
-<hr>
-<h2>Il Flusso Completo in Azione</h2>
-<p>Ricapitoliamo cosa succede quando faccio push di un nuovo articolo:</p>
-<ol>
-<li><strong>Push</strong>: il commit arriva sul repository sorgente</li>
-<li><strong>Trigger</strong>: GitHub Actions rileva il push e avvia il workflow</li>
-<li><strong>Checkout</strong>: il codice viene scaricato sulla macchina virtuale</li>
-<li><strong>Setup</strong>: Node.js viene configurato, le dipendenze installate</li>
-<li><strong>Build</strong>: SimplePress genera il sito statico</li>
-<li><strong>Deploy</strong>: i file vengono copiati sul repository di pubblicazione</li>
-<li><strong>GitHub Pages</strong>: rileva il nuovo commit e aggiorna il sito</li>
-</ol>
-<p>Tutto questo succede in pochi minuti, senza alcun intervento manuale. Posso scrivere un articolo dal telefono, fare commit da una web interface, e il sito si aggiorna comunque.</p>
-<hr>
-<h2>Vantaggi Inaspettati</h2>
-<p>Oltre ai benefici ovvi (automazione, comodità), questo setup ha alcuni vantaggi meno scontati:</p>
-<p><strong>Rollback facile</strong>: ogni deploy è un commit nel repository di pubblicazione. Se qualcosa va storto, basta fare revert all&#39;ultimo commit buono e il sito torna come prima.</p>
-<p><strong>Audit trail</strong>: puoi vedere esattamente quando ogni versione del sito è stata pubblicata, e quale commit sorgente l&#39;ha generata.</p>
-<p><strong>Collaborazione semplificata</strong>: se un giorno volessi accettare contributi, i collaboratori potrebbero aprire pull request sul repository sorgente. Il deploy avverrebbe solo dopo il merge, mantenendo il controllo su cosa viene pubblicato.</p>
-<p><strong>Ambienti multipli</strong>: potresti configurare workflow diversi per branch diversi. Ad esempio, il branch <code>develop</code> potrebbe pubblicare su un sito di staging, mentre <code>main</code> pubblica su produzione.</p>
-<hr>
-<h2>Considerazioni Pratiche</h2>
-<p>Se state pensando di implementare un sistema simile, ecco alcuni consigli pratici:</p>
-<p><strong>Testare localmente prima di pushare</strong>. Assicuratevi che il build funzioni sul vostro computer prima di affidarvi all&#39;automazione. Debugging di workflow falliti è meno divertente di quanto sembri.</p>
-<p><strong>Usare <code>npm ci</code> invece di <code>npm install</code></strong>. Il primo è più veloce e garantisce build riproducibili, usando esattamente le versioni specificate nel lockfile.</p>
-<p><strong>Abilitare il caching delle dipendenze</strong>. GitHub Actions può memorizzare le dipendenze npm tra un&#39;esecuzione e l&#39;altra, velocizzando significativamente i build successivi.</p>
-<p><strong>Monitorare i workflow</strong>. Ogni tanto date un&#39;occhiata alla tab Actions. Se qualcosa fallisce, lo saprete solo guardando lì (a meno che non configuriate notifiche, che è un&#39;altra buona idea).</p>
-<hr>
-<h2>Conclusioni</h2>
-<p>L&#39;automazione del deploy è uno di quegli investimenti che ripagano ogni singolo giorno. Il tempo speso a configurare il workflow viene recuperato rapidamente, e soprattutto elimina quella frizione psicologica che a volte ci impedisce di pubblicare.</p>
-<p>Quando sai che pubblicare significa semplicemente &quot;commit e push&quot;, pubblichi di più. Quando non devi preoccuparti del deploy, puoi concentrarti su quello che conta davvero: i contenuti.</p>
-<p>GitHub Actions e GitHub Pages formano un&#39;accoppiata potente per chiunque gestisca un sito statico. Sono gratuiti, affidabili, e una volta configurati spariscono sullo sfondo, facendo il loro lavoro in silenzio.</p>
-<p>La separazione tra repository sorgente e repository di pubblicazione aggiunge un livello di pulizia architetturale che apprezzo particolarmente. Non è necessaria per tutti, ma se vi trovate a gestire progetti dove la distinzione tra &quot;sviluppo&quot; e &quot;produzione&quot; è importante, è un pattern da considerare.</p>
-<p>E la prossima volta che fate push e il vostro sito si aggiorna da solo, prendetevi un momento per apprezzare la magia. Anche se sapete esattamente come funziona, resta comunque un po&#39; magica.</p>
+        <h1>Cookie Policy</h1>
+        <p>Informativa completa sui cookie utilizzati da questo sito.</p>
+        <h2>Nessun Tracciamento</h2>
+        <p>Questo sito non utilizza cookie di tracciamento o di profilazione.</p>
+        <h2>Cookie Tecnici</h2>
+        <p>I cookie tecnici vengono utilizzati esclusivamente per:</p>
+        <ul>
+          <li>Memorizzare la tua preferenza sui cookie</li><li>Garantire il corretto funzionamento del sito</li>
+        </ul>
+        <h2>Cookie di Terze Parti</h2>
+        <p>Non vengono utilizzati cookie di terze parti per scopi pubblicitari o di tracciamento.</p>
+        <h2>I Tuoi Diritti</h2>
+        <p>Hai il diritto di revocare il consenso in qualsiasi momento cancellando i cookie del browser.</p>
       </article>
     
   </main>

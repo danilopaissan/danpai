@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chi sono - Danilo Paissan</title>
-  <meta name="description" content="Trentino dentro, ligure fuori">
+  <title>Cookie Policy - Danilo Paissan</title>
+  <meta name="description" content="Trentino inside, ligurian outside">
   <style>
       :root {
         --color-pearl: #F8F9FA;
@@ -364,18 +364,18 @@
 <body>
   <header>
     <nav class="container">
-      <a href="index.html" class="logo">
+      <a href="index-en.html" class="logo">
         Danilo Paissan
       </a>
       <div style="display: flex; align-items: center; gap: 2rem;">
         <ul class="nav-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="chi-sono.html">Chi sono</a></li>
+          <li><a href="index-en.html">Home</a></li>
+          <li><a href="about.html">About Me</a></li>
         </ul>
         <div class="language-switcher">
-          <a href="javascript:switchLanguage('en')" class="">EN</a>
+          <a href="javascript:switchLanguage('en')" class="active">EN</a>
           <span>|</span>
-          <a href="javascript:switchLanguage('it')" class="active">IT</a>
+          <a href="javascript:switchLanguage('it')" class="">IT</a>
         </div>
       </div>
     </nav>
@@ -384,22 +384,19 @@
   <main class="container">
     
       <article class="post-content">
-        <h1>Chi sono</h1>
-        <p><img src="./img/me.png" alt=""></p>
-<p>Ciao, mi chiamo Danilo, sono nato nel 1975 e dal 2000 lavoro professionalmente come sviluppatore software.</p>
-<p>Adoro le moto, i cani, la fotografia e cucinare. </p>
-<p>Odio la grafica web.</p>
-        
-      <div class="social-links">
-        <h3>Seguimi</h3>
-        <ul class="social-links-list">
-          <li><a href="https://www.linkedin.com/in/danilopaissan/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-          <li><a href="https://www.instagram.com/danpai/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
-          <li><a href="https://www.facebook.com/dan.pai.969" target="_blank" rel="noopener noreferrer">Facebook</a></li>
-          <li><a href="https://x.com/DanPai" target="_blank" rel="noopener noreferrer">X</a></li>
+        <h1>Cookie Policy</h1>
+        <p>Complete information about cookies used by this site.</p>
+        <h2>No Tracking</h2>
+        <p>This site does not use tracking or profiling cookies.</p>
+        <h2>Technical Cookies</h2>
+        <p>Technical cookies are used exclusively for:</p>
+        <ul>
+          <li>Storing your cookie preference</li><li>Ensuring proper site functionality</li>
         </ul>
-      </div>
-    
+        <h2>Third-Party Cookies</h2>
+        <p>No third-party cookies are used for advertising or tracking purposes.</p>
+        <h2>Your Rights</h2>
+        <p>You have the right to revoke consent at any time by clearing your browser cookies.</p>
       </article>
     
   </main>
@@ -407,22 +404,22 @@
   <footer>
     <div class="container">
       <div class="footer-links">
-        <a href="cookie-policy.html">Cookie Policy</a>
+        <a href="cookie-policy-en.html">Cookie Policy</a>
         <span>|</span>
-        <a href="argomenti.html">Argomenti</a>
+        <a href="topics.html">Topics</a>
       </div>
-      <p>&copy; 2024 Danilo Paissan. Tutti i diritti riservati.</p>
+      <p>&copy; 2024 Danilo Paissan. All rights reserved.</p>
     </div>
   </footer>
   
   
       <div id="cookie-banner" class="cookie-banner" style="display: none;">
         <div class="cookie-content">
-          <h3>Informativa sui Cookie</h3>
-          <p>Questo sito non utilizza cookie di tracciamento o di profilazione. I cookie tecnici vengono utilizzati solo per il funzionamento del sito.</p>
+          <h3>Cookie Notice</h3>
+          <p>This site does not use tracking or profiling cookies. Technical cookies are only used for site functionality.</p>
           <div class="cookie-buttons">
-            <button onclick="acceptCookies()" class="btn-accept">Accetto</button>
-            <button onclick="rejectCookies()" class="btn-reject">Rifiuto</button>
+            <button onclick="acceptCookies()" class="btn-accept">Accept</button>
+            <button onclick="rejectCookies()" class="btn-reject">Reject</button>
           </div>
         </div>
       </div>
@@ -491,9 +488,9 @@
           if (consent === 'rejected') {
             document.body.innerHTML = `
               <div class="cookie-rejected">
-                <h2>È necessario accettare i cookie per accedere al sito.</h2>
+                <h2>You need to accept cookies to access the site.</h2>
                 <button onclick="resetCookieConsent()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-medium-gray); color: white; border: none; border-radius: 4px; cursor: pointer;">
-                  Accetto
+                  Accept
                 </button>
               </div>
             `;
